@@ -1,24 +1,29 @@
-package com.pledgeapp.pledge;
+package com.pledgeapp.pledge.activities;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.pledgeapp.pledge.R;
 
-public class MainActivity extends AppCompatActivity {
+public class AddPaymentActivity extends PledgeBaseActivity {
+
+    public static Intent getLaunchIntent(Context context) {
+        return new Intent(context, AddPaymentActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_add_payment, menu);
         return true;
     }
 
