@@ -34,9 +34,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="pledgerest"
-                    android:scheme="oauth" />
-
+                    android:host="localhost"
+                    android:scheme="http"/>
             </intent-filter>
         </activity>
         <activity

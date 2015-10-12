@@ -1,7 +1,7 @@
 package com.pledgeapp.pledge;
 
 import org.scribe.builder.api.Api;
-import org.scribe.builder.api.GoogleApi;
+import org.scribe.builder.api.Google2Api;
 
 import android.content.Context;
 
@@ -21,11 +21,11 @@ import com.loopj.android.http.RequestParams;
  * 
  */
 public class PledgeClient extends OAuthBaseClient {
-	public static final Class<? extends Api> AUTH_REST_API_CLASS = GoogleApi.class;
-	public static final String PLEDGE_SERVICE_REST_URL = "https://api.pledgeapp.com"; // Change this, base API URL
-	public static final String AUTH_REST_CONSUMER_KEY = "SOME_KEY";       // Change this
-	public static final String AUTH_REST_CONSUMER_SECRET = "SOME_SECRET"; // Change this
-	public static final String AUTH_REST_CALLBACK_URL = "oauth://pledgerest";
+	public static final Class<? extends Api> AUTH_REST_API_CLASS = Google2Api.class;
+	public static final String PLEDGE_SERVICE_REST_URL = "https://api.pledgeapp.com"; // TODO: Change this, base API URL
+	public static final String AUTH_REST_CONSUMER_KEY = "649136570750-psgq1jmra0jcr4v46fsqbh6lkau00i95.apps.googleusercontent.com";
+	public static final String AUTH_REST_CONSUMER_SECRET = "asdfsdfasdfa";
+	public static final String AUTH_REST_CALLBACK_URL = "http://localhost";
 
 	public PledgeClient(Context context) {
 		super(context, AUTH_REST_API_CLASS, PLEDGE_SERVICE_REST_URL, AUTH_REST_CONSUMER_KEY, AUTH_REST_CONSUMER_SECRET, AUTH_REST_CALLBACK_URL);

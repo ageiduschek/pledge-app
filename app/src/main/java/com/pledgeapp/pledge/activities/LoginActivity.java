@@ -20,8 +20,7 @@ public class LoginActivity extends OAuthLoginActionBarActivity<PledgeClient> {
 	// i.e Display application "homepage"
 	@Override
 	public void onLoginSuccess() {
-		 Intent i = new Intent(this, PledgeBaseActivity.class);
-		 startActivity(i);
+		 startActivity(BrowseActivity.getLaunchIntent(this));
 	}
 
 	// OAuth authentication flow failed, handle the error
