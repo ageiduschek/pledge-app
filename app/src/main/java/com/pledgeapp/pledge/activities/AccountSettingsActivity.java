@@ -14,18 +14,7 @@ public class AccountSettingsActivity extends PledgeBaseActivity {
         return new Intent(context, AccountSettingsActivity.class);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+    protected void showSignedInUI() {
+        // TODO: Implement
     }
 }

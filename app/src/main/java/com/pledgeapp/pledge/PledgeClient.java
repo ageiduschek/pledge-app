@@ -2,6 +2,7 @@ package com.pledgeapp.pledge;
 
 import org.scribe.builder.api.Api;
 import org.scribe.builder.api.Google2Api;
+import org.scribe.model.Token;
 
 import android.content.Context;
 

@@ -1,40 +1,50 @@
 package com.pledgeapp.pledge.activities;
 
+import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
-
-import com.codepath.oauth.OAuthLoginActionBarActivity;
-import com.pledgeapp.pledge.PledgeClient;
+import com.google.android.gms.common.SignInButton;
 import com.pledgeapp.pledge.R;
 
-public class LoginActivity extends OAuthLoginActionBarActivity<PledgeClient> {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_login);
-	}
+/**
+ * Minimal activity demonstrating basic Google Sign-In.
+ */
+public class LoginActivity extends AuthBaseActivity implements View.OnClickListener {
 
-	// OAuth authenticated successfully, launch primary authenticated activity
-	// i.e Display application "homepage"
-	@Override
-	public void onLoginSuccess() {
-		 startActivity(BrowseActivity.getLaunchIntent(this));
-	}
+    private static final String TAG = LoginActivity.class.getSimpleName();
 
-	// OAuth authentication flow failed, handle the error
-	// i.e Display an error dialog or toast
-	@Override
-	public void onLoginFailure(Exception e) {
-		e.printStackTrace();
-	}
+    public static Intent getLaunchIntent(Context context) {
+        return new Intent(context, LoginActivity.class);
+    }
 
-	// Click handler method for the button used to start OAuth flow
-	// Uses the client to initiate OAuth authorization
-	// This should be tied to a button used to login
-	public void loginToRest(View view) {
-		getClient().connect();
-	}
+    @Override
+    protected void showSignedInUI() {
+        // TODO: Launch new activity
+        startActivity(BrowseActivity.getLaunchIntent(this));
+        finish();
+    }
 
+    @Override
+    protected void showSignedOutUI() {
+        setContentView(R.layout.activity_login);
+
+        // Set up button click listeners
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
+
+        // Large sign-in
+        ((SignInButton) findViewById(R.id.sign_in_button)).setSize(SignInButton.SIZE_WIDE);
+
+        // Start with sign-in button disabled until sign-in either succeeds or fails
+        findViewById(R.id.sign_in_button).setEnabled(true);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_in_button:
+                onSignInClicked();
+                break;
+        }
+    }
 }
