@@ -6,17 +6,15 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.pledgeapp.pledge.PledgeApplication;
 
-public class SignoutActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+public class LogoutActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     public static Intent getLaunchIntent(Context context) {
-        return new Intent(context, SignoutActivity.class);
+        return new Intent(context, LogoutActivity.class);
     }
 
     @Override
@@ -36,9 +34,7 @@ public class SignoutActivity extends AppCompatActivity implements GoogleApiClien
     }
 
     @Override
-    public void onConnected(Bundle bundle) {
-
-    }
+    public void onConnected(Bundle bundle) {}
 
     @Override
     public void onConnectionSuspended(int i) {}

@@ -26,7 +26,7 @@ public class AccountSettingsActivity extends NavigationBarActivity {
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(SignoutActivity.getLaunchIntent(AccountSettingsActivity.this));
+                startActivity(LogoutActivity.getLaunchIntent(AccountSettingsActivity.this));
                 finish();
             }
         });

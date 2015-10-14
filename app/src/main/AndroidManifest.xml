@@ -61,7 +61,7 @@
             android:label="@string/title_activity_browse" >
         </activity>
         <activity
-            android:name=".activities.SignoutActivity"
+            android:name=".activities.LogoutActivity"
             android:label="@string/title_activity_browse" >
         </activity>
     </application>
