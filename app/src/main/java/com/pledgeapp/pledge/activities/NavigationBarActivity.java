@@ -44,14 +44,6 @@ public abstract class NavigationBarActivity extends SignInRequiredBaseActivity {
 //        FragmentManager fragmentManager = getSupportFragmentManager();
 //        fragmentManager.beginTransaction().replace(R.id.flContent, new FamilyGuyFragment()).commit();
 //        setTitle(R.string.family_guy);
-
-        Button logoutButton = (Button) findViewById(R.id.logout_button);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onSignOutClicked();
-            }
-        });
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
@@ -103,38 +95,53 @@ public abstract class NavigationBarActivity extends SignInRequiredBaseActivity {
 
 
     public void selectDrawerItem(MenuItem menuItem) {
-        // Create a new fragment and specify the planet to show based on
-        // position
-        Fragment fragment = null;
 
+        Intent launchIntent = getLaunchIntentFromSelectedItem(menuItem.getItemId());
+
+        // Highlight the selected item, update the title, and close the drawer
+        mNavDrawer.closeDrawers();
+
+
+        if (launchIntent != null) {
+            startActivity(launchIntent);
+            // Remove the current activity from the back stack
+            finish();
+        }
+    }
+
+    public Intent getLaunchIntentFromSelectedItem(int itemId) {
         Intent launchIntent;
-        switch(menuItem.getItemId()) {
+        Class<?> activityClass;
+        switch(itemId) {
             case R.id.nav_browse:
+                activityClass = BrowseActivity.class;
                 launchIntent = BrowseActivity.getLaunchIntent(this);
                 break;
             case R.id.nav_donation_history:
+                activityClass = DonationHistoryActivity.class;
                 launchIntent = DonationHistoryActivity.getLaunchIntent(this);
                 break;
             case R.id.nav_payment_method:
+                activityClass = AddPaymentActivity.class;
                 launchIntent = AddPaymentActivity.getLaunchIntent(this);
                 break;
             case R.id.nav_link_employer:
+                activityClass = LinkEmployerActivity.class;
                 launchIntent = LinkEmployerActivity.getLaunchIntent(this);
                 break;
-
             case R.id.nav_account_settings:
+                activityClass = AccountSettingsActivity.class;
                 launchIntent = AccountSettingsActivity.getLaunchIntent(this);
                 break;
             default:
                 throw new RuntimeException("Unknown menu item");
         }
 
-        // Highlight the selected item, update the title, and close the drawer
-        mNavDrawer.closeDrawers();
+        if (this.getClass() == activityClass) {
+            return null;
+        }
 
-        startActivity(launchIntent);
-        // Remove the current activity from the back stack
-        finish();
+        return launchIntent;
     }
 
 

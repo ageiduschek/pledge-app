@@ -46,9 +46,8 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
 
 
     /* Abstract methods - must be implemented inheriting classes */
-    protected abstract void showSignedInUI();
-    protected abstract void showSignedOutUI();
-
+    protected abstract void onAuthGranted(Bundle savedInstanceState);
+    protected abstract void onAuthDenied(Bundle savedInstanceState);
 
     /* RequestCode for resolutions involving sign-in */
     private static final int RC_SIGN_IN = 1;
@@ -69,9 +68,14 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
     /* Should we automatically resolve ConnectionResults when possible? */
     private boolean mShouldResolve = false;
 
+    // A reference to the saved instance state for this object
+    private Bundle mSavedInstanceState;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mSavedInstanceState = savedInstanceState;
 
         // Restore from saved instance state
         if (savedInstanceState != null) {
@@ -131,7 +135,7 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
         Log.d(TAG, "onRequestPermissionsResult:" + requestCode);
         if (requestCode == RC_PERM_GET_ACCOUNTS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showSignedInUI();
+                onAuthGranted(mSavedInstanceState);
             } else {
                 Log.d(TAG, "GET_ACCOUNTS Permission Denied.");
             }
@@ -147,7 +151,7 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
         mShouldResolve = false;
 
         // Show the signed-in UI
-        showSignedInUI();
+        onAuthGranted(mSavedInstanceState);
     }
 
     @Override
@@ -182,7 +186,7 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
             }
         } else {
             // Show the signed-out UI
-            showSignedOutUI();
+            onAuthDenied(mSavedInstanceState);
         }
     }
 
@@ -197,7 +201,7 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
                                                    @Override
                                                    public void onCancel(DialogInterface dialog) {
                                                        mShouldResolve = false;
-                                                       showSignedOutUI();
+                                                       onAuthDenied(mSavedInstanceState);
                                                    }
                                                }).show();
             } else {
@@ -206,7 +210,7 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
                 Toast.makeText(this, errorString, Toast.LENGTH_SHORT).show();
 
                 mShouldResolve = false;
-                showSignedOutUI();
+                onAuthDenied(mSavedInstanceState);
             }
         }
     }
@@ -228,7 +232,7 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
             mGoogleApiClient.disconnect();
         }
 
-        showSignedOutUI();
+        onAuthDenied(mSavedInstanceState);
     }
 
     protected void onDisconnectClicked() {
@@ -240,6 +244,6 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
             mGoogleApiClient.disconnect();
         }
 
-        showSignedOutUI();
+        onAuthDenied(mSavedInstanceState);
     }
 }

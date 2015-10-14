@@ -2,6 +2,7 @@ package com.pledgeapp.pledge.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 public class DonationHistoryActivity extends NavigationBarActivity {
 
@@ -9,7 +10,8 @@ public class DonationHistoryActivity extends NavigationBarActivity {
         return new Intent(context, DonationHistoryActivity.class);
     }
 
-    protected void showSignedInUI() {
+    @Override
+    protected void onAuthGranted(Bundle savedInstanceState) {
         // TODO: Implement
     }
 }

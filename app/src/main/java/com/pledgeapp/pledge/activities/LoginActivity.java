@@ -2,6 +2,7 @@ package com.pledgeapp.pledge.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import com.google.android.gms.common.SignInButton;
 import com.pledgeapp.pledge.R;
@@ -19,14 +20,13 @@ public class LoginActivity extends AuthBaseActivity implements View.OnClickListe
     }
 
     @Override
-    protected void showSignedInUI() {
-        // TODO: Launch new activity
+    protected void onAuthGranted(Bundle savedInstanceState) {
         startActivity(BrowseActivity.getLaunchIntent(this));
         finish();
     }
 
     @Override
-    protected void showSignedOutUI() {
+    protected void onAuthDenied(Bundle savedInstanceState) {
         setContentView(R.layout.activity_login);
 
         // Set up button click listeners
