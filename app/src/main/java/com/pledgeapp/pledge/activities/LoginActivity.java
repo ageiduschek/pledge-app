@@ -26,7 +26,8 @@ public class LoginActivity extends AuthBaseActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onAuthDenied(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         // Set up button click listeners

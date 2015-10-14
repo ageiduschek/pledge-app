@@ -32,6 +32,7 @@ import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
+import com.pledgeapp.pledge.PledgeApplication;
 
 
 /**
@@ -47,7 +48,6 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
 
     /* Abstract methods - must be implemented inheriting classes */
     protected abstract void onAuthGranted(Bundle savedInstanceState);
-    protected abstract void onAuthDenied(Bundle savedInstanceState);
 
     /* RequestCode for resolutions involving sign-in */
     private static final int RC_SIGN_IN = 1;
@@ -91,18 +91,14 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
                 .addScope(new Scope(Scopes.PROFILE))
                 .addScope(new Scope(Scopes.EMAIL))
                 .build();
+
+        PledgeApplication.setGoogleApiClient(mGoogleApiClient);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mGoogleApiClient.disconnect();
     }
 
     @Override
@@ -185,8 +181,7 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
                 showErrorDialog(connectionResult);
             }
         } else {
-            // Show the signed-out UI
-            onAuthDenied(mSavedInstanceState);
+            launchLoginActivity();
         }
     }
 
@@ -201,7 +196,7 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
                                                    @Override
                                                    public void onCancel(DialogInterface dialog) {
                                                        mShouldResolve = false;
-                                                       onAuthDenied(mSavedInstanceState);
+                                                       launchLoginActivity();
                                                    }
                                                }).show();
             } else {
@@ -210,11 +205,17 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
                 Toast.makeText(this, errorString, Toast.LENGTH_SHORT).show();
 
                 mShouldResolve = false;
-                onAuthDenied(mSavedInstanceState);
+                launchLoginActivity();
             }
         }
     }
 
+    private void launchLoginActivity() {
+        if (!(this instanceof LoginActivity)) {
+            startActivity(LoginActivity.getLaunchIntent(this));
+            finish();
+        }
+    }
 
     protected void onSignInClicked() {
         // User clicked the sign-in button, so begin the sign-in process and automatically
@@ -222,28 +223,5 @@ public abstract class AuthBaseActivity extends AppCompatActivity implements
         mShouldResolve = true;
         mGoogleApiClient.connect();
         // TODO: Show a message to the user that we are signing in.
-    }
-
-    protected void onSignOutClicked() {
-        // Clear the default account so that GoogleApiClient will not automatically
-        // connect in the future.
-        if (mGoogleApiClient.isConnected()) {
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-        }
-
-        onAuthDenied(mSavedInstanceState);
-    }
-
-    protected void onDisconnectClicked() {
-        // Revoke all granted permissions and clear the default account.  The user will have
-        // to pass the consent screen to sign in again.
-        if (mGoogleApiClient.isConnected()) {
-            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-            Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
-            mGoogleApiClient.disconnect();
-        }
-
-        onAuthDenied(mSavedInstanceState);
     }
 }

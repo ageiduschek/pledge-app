@@ -10,7 +10,7 @@ public class BrowseActivity extends NavigationBarActivity {
     }
 
     @Override
-    protected void onAuthGranted(Bundle savedInstanceState) {
-        // TODO: Implement
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 }

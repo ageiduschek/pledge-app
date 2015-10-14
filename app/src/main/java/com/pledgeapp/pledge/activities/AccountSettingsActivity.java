@@ -16,15 +16,18 @@ public class AccountSettingsActivity extends NavigationBarActivity {
     }
 
     @Override
-    protected void onAuthGranted(Bundle savedInstanceState) {
-        // TODO: Implement
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         ViewStub stub = (ViewStub) findViewById(R.id.nav_bar_activity_main_layout_stub);
         stub.setLayoutResource(R.layout.activity_account_settings);
-        Button logoutButton = (Button) findViewById(R.id.logout_button);
+        View v = ((ViewStub) findViewById(R.id.nav_bar_activity_main_layout_stub)).inflate();
+        Button logoutButton = (Button) v.findViewById(R.id.logout_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSignOutClicked();
+                startActivity(SignoutActivity.getLaunchIntent(AccountSettingsActivity.this));
+                finish();
             }
         });
     }
