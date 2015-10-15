@@ -41,23 +41,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.DonationHistoryActivity"
-            android:label="@string/title_activity_donation_history" >
-        </activity>
-        <activity
-            android:name=".activities.LinkEmployerActivity"
-            android:label="@string/title_activity_link_employer" >
-        </activity>
-        <activity
-            android:name=".activities.AddPaymentActivity"
-            android:label="@string/title_activity_add_payment" >
-        </activity>
-        <activity
-            android:name=".activities.AccountSettingsActivity"
-            android:label="@string/title_activity_account_settings" >
-        </activity>
-        <activity
-            android:name=".activities.BrowseActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/title_activity_browse" >
         </activity>
         <activity

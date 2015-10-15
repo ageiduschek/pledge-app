@@ -1,8 +1,11 @@
 package com.pledgeapp.pledge.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,11 +16,21 @@ import android.view.MenuItem;
 
 
 import com.pledgeapp.pledge.R;
+import com.pledgeapp.pledge.fragments.AccountSettingsFragment;
+import com.pledgeapp.pledge.fragments.AddPaymentFragment;
+import com.pledgeapp.pledge.fragments.BrowseFragment;
+import com.pledgeapp.pledge.fragments.DonationHistoryFragment;
+import com.pledgeapp.pledge.fragments.LinkEmployerFragment;
 
-public abstract class NavigationBarActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     ActionBarDrawerToggle drawerToggle;
-    DrawerLayout mNavDrawer;
+    DrawerLayout mDrawerLayout;
+    NavigationView mNvDrawer;
+
+    public static Intent getLaunchIntent(Context context) {
+        return new Intent(context, MainActivity.class);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,34 +41,29 @@ public abstract class NavigationBarActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Find our drawer view
-        mNavDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = setupDrawerToggle(mNavDrawer, toolbar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerToggle = setupDrawerToggle(mDrawerLayout, toolbar);
 
         // Tie DrawerLayout events to the ActionBarToggle
-        mNavDrawer.setDrawerListener(drawerToggle);
+        mDrawerLayout.setDrawerListener(drawerToggle);
 
-        NavigationView nvDrawer = (NavigationView) findViewById(R.id.nvView);
-        setupDrawerContent(nvDrawer);
+        mNvDrawer = (NavigationView) findViewById(R.id.nvView);
+        setupDrawerContent();
 
         // Set default to first item
-//        MenuItem menuItem = nvDrawer.getMenu().getItem(0);
-//        menuItem.setChecked(true);
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.beginTransaction().replace(R.id.flContent, new FamilyGuyFragment()).commit();
-//        setTitle(R.string.family_guy);
+        selectDrawerItem(R.id.nav_browse);
     }
 
-    private void setupDrawerContent(NavigationView navigationView) {
-        navigationView.setNavigationItemSelectedListener(
+    private void setupDrawerContent() {
+        mNvDrawer.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        selectDrawerItem(menuItem);
+                        selectDrawerItem(menuItem.getItemId());
                         return true;
                     }
                 });
     }
-
 
     private ActionBarDrawerToggle setupDrawerToggle(DrawerLayout dlDrawer, Toolbar toolbar) {
         return new ActionBarDrawerToggle(this, dlDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
@@ -81,7 +89,7 @@ public abstract class NavigationBarActivity extends AppCompatActivity {
         // The back button should close the nav drawer
         switch (item.getItemId()) {
             case android.R.id.home:
-                mNavDrawer.closeDrawer(GravityCompat.START);
+                mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
         }
 
@@ -92,56 +100,49 @@ public abstract class NavigationBarActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void selectDrawerItem(int menuItemId) {
+        Class<? extends Fragment> fragmentClass = getClassFromId(menuItemId);
 
-    public void selectDrawerItem(MenuItem menuItem) {
+        Fragment fragment = null;
+        try {
+            fragment = fragmentClass.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        Intent launchIntent = getLaunchIntentFromSelectedItem(menuItem.getItemId());
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.flFragmentContainer, fragment).commit();
 
         // Highlight the selected item, update the title, and close the drawer
-        mNavDrawer.closeDrawers();
-
-
-        if (launchIntent != null) {
-            startActivity(launchIntent);
-            // Remove the current activity from the back stack
-            finish();
-        }
+        MenuItem menuItem = mNvDrawer.getMenu().findItem(menuItemId);
+        menuItem.setChecked(true);
+        setTitle(menuItem.getTitle());
+        mDrawerLayout.closeDrawers();
     }
 
-    public Intent getLaunchIntentFromSelectedItem(int itemId) {
-        Intent launchIntent;
-        Class<?> activityClass;
+    public Class<? extends Fragment> getClassFromId(int itemId) {
+        Class<? extends Fragment> fragmentClass;
         switch(itemId) {
             case R.id.nav_browse:
-                activityClass = BrowseActivity.class;
-                launchIntent = BrowseActivity.getLaunchIntent(this);
+                fragmentClass = BrowseFragment.class;
                 break;
             case R.id.nav_donation_history:
-                activityClass = DonationHistoryActivity.class;
-                launchIntent = DonationHistoryActivity.getLaunchIntent(this);
+                fragmentClass = DonationHistoryFragment.class;
                 break;
             case R.id.nav_payment_method:
-                activityClass = AddPaymentActivity.class;
-                launchIntent = AddPaymentActivity.getLaunchIntent(this);
+                fragmentClass = AddPaymentFragment.class;
                 break;
             case R.id.nav_link_employer:
-                activityClass = LinkEmployerActivity.class;
-                launchIntent = LinkEmployerActivity.getLaunchIntent(this);
+                fragmentClass = LinkEmployerFragment.class;
                 break;
             case R.id.nav_account_settings:
-                activityClass = AccountSettingsActivity.class;
-                launchIntent = AccountSettingsActivity.getLaunchIntent(this);
+                fragmentClass = AccountSettingsFragment.class;
                 break;
             default:
                 throw new RuntimeException("Unknown menu item");
         }
 
-        if (this.getClass() == activityClass) {
-            return null;
-        }
-
-        return launchIntent;
+        return fragmentClass;
     }
-
-
 }

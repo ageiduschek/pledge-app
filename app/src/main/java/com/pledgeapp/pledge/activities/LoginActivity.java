@@ -212,7 +212,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     protected void onAuthGranted() {
-        startActivity(BrowseActivity.getLaunchIntent(this));
+        startActivity(MainActivity.getLaunchIntent(this));
         finish();
     }
 

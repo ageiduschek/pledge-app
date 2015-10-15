@@ -17,9 +17,8 @@
             android:layout_height="wrap_content" />
 
         <!-- The main content view -->
-        <ViewStub
-            android:id="@+id/nav_bar_activity_main_layout_stub"
-            android:inflatedId="@+id/layout_main_content"
+        <FrameLayout
+            android:id="@+id/flFragmentContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </LinearLayout>
