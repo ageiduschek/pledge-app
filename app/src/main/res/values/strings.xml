@@ -23,5 +23,7 @@
     <string name="browse">Browse</string>
     <string name="title_activity_browse">BrowseActivity</string>
     <string name="pledge_tagline">Open your pockets to the world</string>
+    <string name="search">Search</string>
+    <string name="sign_out">Sign out</string>
 
 </resources>

@@ -6,13 +6,17 @@ import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 import com.pledgeapp.pledge.R;
@@ -21,12 +25,15 @@ import com.pledgeapp.pledge.fragments.AddPaymentFragment;
 import com.pledgeapp.pledge.fragments.BrowseFragment;
 import com.pledgeapp.pledge.fragments.DonationHistoryFragment;
 import com.pledgeapp.pledge.fragments.LinkEmployerFragment;
+import com.pledgeapp.pledge.fragments.SearchFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    ActionBarDrawerToggle drawerToggle;
-    DrawerLayout mDrawerLayout;
-    NavigationView mNvDrawer;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    private NavigationView mNvDrawer;
+    private SearchView mSearchView;
+    private MenuItem mSearchMenuItem;
 
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, MainActivity.class);
@@ -42,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Find our drawer view
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerToggle = setupDrawerToggle(mDrawerLayout, toolbar);
+        mDrawerToggle = setupDrawerToggle(mDrawerLayout, toolbar);
 
         // Tie DrawerLayout events to the ActionBarToggle
-        mDrawerLayout.setDrawerListener(drawerToggle);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         mNvDrawer = (NavigationView) findViewById(R.id.nvView);
         setupDrawerContent();
@@ -74,26 +81,70 @@ public class MainActivity extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        drawerToggle.syncState();
+        mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
-        drawerToggle.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // The back button should close the nav drawer
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-        }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        setupSearchBar(menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-        if (drawerToggle.onOptionsItemSelected(item)) {
+    private void setupSearchBar(Menu menu) {
+        mSearchMenuItem = menu.findItem(R.id.action_search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
+
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        MenuItemCompat.setOnActionExpandListener(mSearchMenuItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                fragmentManager.beginTransaction().replace(R.id.flFragmentContainer,
+                                                           new BrowseFragment()).commit();
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                return true; // Return true to collapse action view
+            }
+
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                fragmentManager.beginTransaction().replace(R.id.flFragmentContainer,
+                                                           new SearchFragment()).commit();
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                return true;
+            }
+        });
+
+        mSearchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+//                mCurrentQuery = mSearchView.getQuery().toString();
+//                fetchQueryResults(0);
+//                hideSoftKeyboard(mSearchView);
+                Toast.makeText(MainActivity.this, "Searched!", Toast.LENGTH_LONG).show();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
@@ -114,11 +165,21 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.flFragmentContainer, fragment).commit();
 
+
+
         // Highlight the selected item, update the title, and close the drawer
         MenuItem menuItem = mNvDrawer.getMenu().findItem(menuItemId);
         menuItem.setChecked(true);
         setTitle(menuItem.getTitle());
         mDrawerLayout.closeDrawers();
+
+        if (mSearchMenuItem != null) {
+            if (menuItemId == R.id.nav_browse) {
+                mSearchMenuItem.setVisible(true);
+            } else {
+                mSearchMenuItem.setVisible(false);
+            }
+        }
     }
 
     public Class<? extends Fragment> getClassFromId(int itemId) {
