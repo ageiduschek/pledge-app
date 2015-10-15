@@ -5,6 +5,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.pledgeapp.pledge.fragments.AccountSettingsFragment;
+import com.pledgeapp.pledge.fragments.nonprofitlists.FeaturedNonProfitsFragment;
+import com.pledgeapp.pledge.fragments.nonprofitlists.LocalNonProfitsFragment;
 
 /**
  * Created by nikhil on 10/14/15.
@@ -21,12 +23,14 @@ public class BrowsePagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         // TODO(nikhilb) actually load correct fragments
         if (position == 0) {
-            // Featured tab
+            return new FeaturedNonProfitsFragment();
         } else if (position == 1) {
             // Categories tab
         } else {
-            // Local tab
+            return new LocalNonProfitsFragment();
         }
+
+        // TODO(nikhilb) remove this line after implementing all fragments
         return new AccountSettingsFragment();
     }
 

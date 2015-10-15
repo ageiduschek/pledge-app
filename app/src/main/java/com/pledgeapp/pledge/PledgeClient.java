@@ -31,22 +31,21 @@ public class PledgeClient extends OAuthBaseClient {
 		super(context, AUTH_REST_API_CLASS, PLEDGE_SERVICE_REST_URL, AUTH_REST_CONSUMER_KEY, AUTH_REST_CONSUMER_SECRET, AUTH_REST_CALLBACK_URL);
 	}
 
-	public void featured(AsyncHttpResponseHandler handler) {
-		// This should return the the api
+	public void getFeatured(AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("/featured");
-		// Can specify query string params directly or through RequestParams.
-		RequestParams params = new RequestParams();
 
+		RequestParams params = new RequestParams();
 
 		client.get(apiUrl, params, handler);
 	}
 
-	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
-	 * 	  i.e getApiUrl("statuses/home_timeline.json");
-	 * 2. Define the parameters to pass to the request (query or body)
-	 *    i.e RequestParams params = new RequestParams("foo", "bar");
-	 * 3. Define the request method and make a call to the client
-	 *    i.e client.get(apiUrl, params, handler);
-	 *    i.e client.post(apiUrl, params, handler);
-	 */
+	public void getLocal(AsyncHttpResponseHandler handler) {
+		// TODO(nikhilb): Update this endpoint when you actually build "/local"
+
+		String apiUrl = getApiUrl("/featured");
+
+		RequestParams params = new RequestParams();
+
+		client.get(apiUrl, params, handler);
+	}
 }
