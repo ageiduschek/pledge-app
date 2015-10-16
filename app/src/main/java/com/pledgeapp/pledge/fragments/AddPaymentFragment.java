@@ -10,6 +10,15 @@ import android.view.ViewGroup;
 import com.pledgeapp.pledge.R;
 
 public class AddPaymentFragment  extends Fragment {
+    public static AddPaymentFragment newInstance() {
+        
+        Bundle args = new Bundle();
+        
+        AddPaymentFragment fragment = new AddPaymentFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+    
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -23,15 +23,15 @@ public class BrowsePagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         // TODO(nikhilb) actually load correct fragments
         if (position == 0) {
-            return new FeaturedNonProfitsFragment();
+            return FeaturedNonProfitsFragment.newInstance();
         } else if (position == 1) {
             // Categories tab
         } else {
-            return new LocalNonProfitsFragment();
+            return LocalNonProfitsFragment.newInstance();
         }
 
         // TODO(nikhilb) remove this line after implementing all fragments
-        return new AccountSettingsFragment();
+        return AccountSettingsFragment.newInstance();
     }
 
     @Override

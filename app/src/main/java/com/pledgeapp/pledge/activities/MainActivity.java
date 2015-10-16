@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 fragmentManager.beginTransaction().replace(R.id.flFragmentContainer,
-                                                           new BrowseFragment()).commit();
+                                                           BrowseFragment.newInstance()).commit();
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 return true; // Return true to collapse action view
             }

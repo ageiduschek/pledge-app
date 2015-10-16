@@ -13,6 +13,14 @@ import com.pledgeapp.pledge.adapters.BrowsePagerAdapter;
 import com.pledgeapp.pledge.R;
 
 public class BrowseFragment extends Fragment {
+    public static BrowseFragment newInstance() {
+        
+        Bundle args = new Bundle();
+        
+        BrowseFragment fragment = new BrowseFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Nullable
     @Override

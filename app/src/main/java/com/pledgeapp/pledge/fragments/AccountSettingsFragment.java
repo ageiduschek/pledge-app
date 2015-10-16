@@ -17,6 +17,15 @@ public class AccountSettingsFragment extends Fragment {
 
     private Context mContext;
 
+    public static AccountSettingsFragment newInstance() {
+
+        Bundle args = new Bundle();
+
+        AccountSettingsFragment fragment = new AccountSettingsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

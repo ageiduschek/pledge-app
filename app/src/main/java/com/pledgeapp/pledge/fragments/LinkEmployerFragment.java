@@ -10,6 +10,15 @@ import android.view.ViewGroup;
 import com.pledgeapp.pledge.R;
 
 public class LinkEmployerFragment extends Fragment {
+    public static LinkEmployerFragment newInstance() {
+        
+        Bundle args = new Bundle();
+        
+        LinkEmployerFragment fragment = new LinkEmployerFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+    
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

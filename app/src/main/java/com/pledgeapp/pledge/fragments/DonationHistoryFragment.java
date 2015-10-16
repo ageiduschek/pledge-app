@@ -13,6 +13,15 @@ import android.view.ViewGroup;
 import com.pledgeapp.pledge.R;
 
 public class DonationHistoryFragment extends Fragment {
+    public static DonationHistoryFragment newInstance() {
+        
+        Bundle args = new Bundle();
+        
+        DonationHistoryFragment fragment = new DonationHistoryFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+    
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
