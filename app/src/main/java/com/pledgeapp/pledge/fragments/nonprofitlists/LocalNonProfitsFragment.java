@@ -8,7 +8,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 public class LocalNonProfitsFragment extends NonProfitListFragment {
     @Override
     protected void fetchNonProfits(JsonHttpResponseHandler handler) {
-        // TODO(nikhilb): figure out why client is null
-//        client.getLocal(handler);
+        client.getLocal(handler);
     }
 }

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pledgeapp.pledge.PledgeApplication;
@@ -41,7 +42,7 @@ public abstract class NonProfitListFragment extends Fragment {
         nonProfits = new ArrayList<>();
         aNonProfits = new NonProfitArrayAdapter(getActivity(), nonProfits);
 
-        client = PledgeApplication.getPledgeClient();
+        client = ((PledgeApplication)getActivity().getApplication()).getPledgeClient();
     }
 
     @Nullable
@@ -70,7 +71,11 @@ public abstract class NonProfitListFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d("DEBUG", errorResponse.toString());
+                if  (errorResponse != null) {
+                    Log.d("DEBUG", errorResponse.toString());
+
+                }
+                Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_SHORT).show();
             }
         });
 

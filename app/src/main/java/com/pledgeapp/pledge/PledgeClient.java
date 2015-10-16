@@ -1,13 +1,8 @@
 package com.pledgeapp.pledge;
 
-import android.content.Context;
-
-import com.codepath.oauth.OAuthBaseClient;
+import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-
-import org.scribe.builder.api.Api;
-import org.scribe.builder.api.Google2Api;
 
 /*
  * 
@@ -20,15 +15,14 @@ import org.scribe.builder.api.Google2Api;
  *
  * 
  */
-public class PledgeClient extends OAuthBaseClient {
-	public static final Class<? extends Api> AUTH_REST_API_CLASS = Google2Api.class;
-	public static final String PLEDGE_SERVICE_REST_URL = "https://pledge-flask.appspot.com";
-	public static final String AUTH_REST_CONSUMER_KEY = "649136570750-psgq1jmra0jcr4v46fsqbh6lkau00i95.apps.googleusercontent.com";
-	public static final String AUTH_REST_CONSUMER_SECRET = "asdfsdfasdfa";
-	public static final String AUTH_REST_CALLBACK_URL = "http://localhost";
+public class PledgeClient {
+	public static final String PLEDGE_SERVICE_BASE_URL = "https://pledge-flask.appspot.com";
 
-	public PledgeClient(Context context) {
-		super(context, AUTH_REST_API_CLASS, PLEDGE_SERVICE_REST_URL, AUTH_REST_CONSUMER_KEY, AUTH_REST_CONSUMER_SECRET, AUTH_REST_CALLBACK_URL);
+    private AsyncHttpClient mClient;
+
+	public PledgeClient() {
+        // TODO(ageiduschek): Authenticate requests with Google Oauth token.
+        mClient = new AsyncHttpClient();
 	}
 
 	public void getFeatured(AsyncHttpResponseHandler handler) {
@@ -36,7 +30,7 @@ public class PledgeClient extends OAuthBaseClient {
 
 		RequestParams params = new RequestParams();
 
-		client.get(apiUrl, params, handler);
+		mClient.get(apiUrl, params, handler);
 	}
 
 	public void getLocal(AsyncHttpResponseHandler handler) {
@@ -46,6 +40,11 @@ public class PledgeClient extends OAuthBaseClient {
 
 		RequestParams params = new RequestParams();
 
-		client.get(apiUrl, params, handler);
+        mClient.get(apiUrl, params, handler);
 	}
+
+    protected String getApiUrl(String path) {
+        return PLEDGE_SERVICE_BASE_URL + "/" + path;
+    }
+
 }

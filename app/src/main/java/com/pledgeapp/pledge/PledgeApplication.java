@@ -15,15 +15,17 @@ import com.google.android.gms.common.api.GoogleApiClient;
  */
 public class PledgeApplication extends com.activeandroid.app.Application {
 	private static Context context;
+	private PledgeClient mPledgeClient;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		PledgeApplication.context = this;
+		mPledgeClient = new PledgeClient();
 	}
 
-	public static PledgeClient getPledgeClient() {
-		return (PledgeClient) PledgeClient.getInstance(PledgeClient.class, PledgeApplication.context);
+	public PledgeClient getPledgeClient() {
+		return mPledgeClient;
 	}
 
 	private static GoogleApiClient mGoogleApiClient;

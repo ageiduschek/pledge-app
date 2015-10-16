@@ -25,5 +25,6 @@
     <string name="pledge_tagline">Open your pockets to the world</string>
     <string name="search">Search</string>
     <string name="sign_out">Sign out</string>
+    <string name="network_error">Network Error</string>
 
 </resources>
