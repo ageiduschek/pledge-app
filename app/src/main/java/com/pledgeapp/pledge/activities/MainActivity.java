@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //TODO(ageiduschek): Fix screen rotation bug with this info http://stackoverflow.com/a/27690095
         setContentView(R.layout.activity_main);
         // Set a Toolbar to replace the ActionBar.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -102,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupSearchBar(Menu menu) {
         mSearchMenuItem = menu.findItem(R.id.action_search);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
         MenuItemCompat.setOnActionExpandListener(mSearchMenuItem, new MenuItemCompat.OnActionExpandListener() {
@@ -116,29 +117,15 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
+                SearchView searchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
+                SearchFragment searchFragment = SearchFragment.newInstance();
+                searchFragment.registerSearchView(searchView);
                 fragmentManager.beginTransaction().replace(R.id.flFragmentContainer,
-                                                           new SearchFragment()).commit();
+                                                           searchFragment).commit();
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                 return true;
             }
         });
-
-        mSearchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-//                mCurrentQuery = mSearchView.getQuery().toString();
-//                fetchQueryResults(0);
-//                hideSoftKeyboard(mSearchView);
-                Toast.makeText(MainActivity.this, "Searched!", Toast.LENGTH_LONG).show();
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
     }
 
 

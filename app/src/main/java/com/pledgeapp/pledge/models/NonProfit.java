@@ -7,7 +7,6 @@ import org.json.JSONObject;
  * Created by nikhil on 10/14/15.
  */
 public class NonProfit {
-
     private String id;
     private String name;
 //    private Category category;
@@ -36,5 +35,29 @@ public class NonProfit {
         }
 
         return nonProfit;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCategory() {
+        return category;
+    }
+
+    public String getMissionStatement() {
+        return missionStatement;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
     }
 }
