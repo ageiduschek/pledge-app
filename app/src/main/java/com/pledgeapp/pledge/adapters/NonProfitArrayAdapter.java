@@ -1,8 +1,13 @@
 package com.pledgeapp.pledge.adapters;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
+import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.models.NonProfit;
 
 import java.util.List;
@@ -11,7 +16,34 @@ import java.util.List;
  * Created by nikhil on 10/14/15.
  */
 public class NonProfitArrayAdapter extends ArrayAdapter<NonProfit> {
+    private class NonProfitListItemViewHolder {
+        private TextView tvName;
+        private TextView tvLocation;
+    }
+
     public NonProfitArrayAdapter(Context context, List<NonProfit> objects) {
-        super(context, android.R.layout.simple_list_item_1, objects);
+        super(context, 0, objects);
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final NonProfit nonProfit = getItem(position);
+
+        NonProfitListItemViewHolder viewHolder;
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.nonprofit_list_item, parent, false);
+
+            viewHolder = new NonProfitListItemViewHolder();
+            viewHolder.tvName = (TextView) convertView.findViewById(R.id.tvName);
+            viewHolder.tvLocation = (TextView) convertView.findViewById(R.id.tvLocation);
+
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (NonProfitListItemViewHolder) convertView.getTag();
+        }
+
+        viewHolder.tvName.setText(nonProfit.getName());
+
+        return convertView;
     }
 }
