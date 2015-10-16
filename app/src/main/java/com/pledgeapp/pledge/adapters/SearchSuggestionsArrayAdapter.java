@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.pledgeapp.pledge.R;
@@ -12,13 +14,19 @@ import com.pledgeapp.pledge.models.SearchSuggestion;
 
 import java.util.List;
 
-public class SearchSuggestionsArrayAdapter extends ArrayAdapter<SearchSuggestion> {
-    private class ViewHolder {
-        TextView suggestionText;
+public class SearchSuggestionsArrayAdapter extends ArrayAdapter<SearchSuggestion> implements Filterable {
+
+    private Filter mFilter;
+
+    public class ViewHolder {
+        public TextView suggestionText;
     }
 
-    public SearchSuggestionsArrayAdapter(Context context, List<SearchSuggestion> objects) {
+    public SearchSuggestionsArrayAdapter(Context context,
+                                         List<SearchSuggestion> objects,
+                                         Filter suggestionsFilter) {
         super(context, R.layout.item_search_suggestion, objects);
+        mFilter = suggestionsFilter;
     }
 
     @Override
@@ -40,5 +48,10 @@ public class SearchSuggestionsArrayAdapter extends ArrayAdapter<SearchSuggestion
             viewHolder.suggestionText.setText(searchSuggestion.getNonProfit().getName());
         }
         return convertView;
+    }
+
+    @Override
+    public Filter getFilter() {
+        return mFilter;
     }
 }

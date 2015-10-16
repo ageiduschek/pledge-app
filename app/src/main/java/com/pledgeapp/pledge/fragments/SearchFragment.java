@@ -8,12 +8,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.Filter;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.pledgeapp.pledge.PledgeApplication;
+import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
+import com.pledgeapp.pledge.adapters.NonProfitArrayAdapter;
 import com.pledgeapp.pledge.adapters.SearchSuggestionsArrayAdapter;
+import com.pledgeapp.pledge.models.NonProfit;
+import com.pledgeapp.pledge.models.RecentQueriesHelper;
 import com.pledgeapp.pledge.models.SearchSuggestion;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +39,11 @@ public class SearchFragment extends Fragment {
         return fragment;
     }
 
-    private SearchSuggestionsArrayAdapter mResultListAdapter;
+    private SearchSuggestionsArrayAdapter mSuggestionsListAdapter;
     private ListView mLvSuggestions;
+    private NonProfitArrayAdapter mResultsListAdapter;
+    private ListView mLvResults;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -38,37 +51,46 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         mLvSuggestions = (ListView) view.findViewById(R.id.lvSearchSuggestions);
+        mSuggestionsListAdapter = new SearchSuggestionsArrayAdapter(getActivity(),
+                                                                    new ArrayList<SearchSuggestion>(),
+                                                                    new SuggestionsFilter());
 
-        mResultListAdapter = new SearchSuggestionsArrayAdapter(getActivity(),
-                                                               new ArrayList<SearchSuggestion>());
+        mLvSuggestions.setAdapter(mSuggestionsListAdapter);
+        mLvSuggestions.setTextFilterEnabled(true);
+        mSuggestionsListAdapter.getFilter().filter("");
+        mLvSuggestions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SearchSuggestionsArrayAdapter.ViewHolder tag
+                        = (SearchSuggestionsArrayAdapter.ViewHolder) view.getTag();
+                doSearchQuery(view, tag.suggestionText.getText().toString());
+                mSuggestionsListAdapter.clear();
+            }
+        });
 
-        mResultListAdapter.addAll(getRecentSearches(""));
 
-        mLvSuggestions.setAdapter(mResultListAdapter);
-
+        mLvResults = (ListView) view.findViewById(R.id.lvSearchResults);
+        mResultsListAdapter = new NonProfitArrayAdapter(getContext(), new ArrayList<NonProfit>());
+        mLvResults.setAdapter(mResultsListAdapter);
         return view;
     }
 
+    // TODO (ageiduschek): Figure out how to register this listener only after onCreateView()
     public void registerSearchView(final SearchView searchView) {
         searchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                mCurrentQuery = mSearchView.getQuery().toString();
-//                fetchQueryResults(0);
-                hideSoftKeyboard(searchView);
-                Toast.makeText(getContext(), "Searched!", Toast.LENGTH_LONG).show();
+                doSearchQuery(searchView, searchView.getQuery().toString());
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // TODO (ageiduschek): Figure out how to register this listener only after onCreateView()
-                // TODO (ageiduschek): Make filtering actually work
                 if (mLvSuggestions != null) {
                     if (newText.isEmpty()) {
-                        mLvSuggestions.clearTextFilter();
+                        mSuggestionsListAdapter.getFilter().filter("");
                     } else {
-                        mLvSuggestions.setFilterText(newText);
+                        mSuggestionsListAdapter.getFilter().filter(newText);
                     }
                 }
                 return true;
@@ -82,10 +104,55 @@ public class SearchFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private List<SearchSuggestion> getRecentSearches(String query) {
-        ArrayList<SearchSuggestion> list = new ArrayList<>();
-        list.add(new SearchSuggestion("apple ball"));
-        list.add(new SearchSuggestion("banana alligator"));
-        return list;
+    private void doSearchQuery(View view, String query) {
+        RecentQueriesHelper.getInstance(getContext()).addOrUpdateQuery(query);
+        PledgeClient client = ((PledgeApplication) getActivity().getApplication()).getPledgeClient();
+        client.getFeatured(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                mResultsListAdapter.clear();
+                List<NonProfit> nonProfits = NonProfit.fromJSONArray(response);
+                mResultsListAdapter.addAll(nonProfits);
+            }
+        });
+        hideSoftKeyboard(view);
+
+    }
+
+    private class SuggestionsFilter extends Filter {
+
+        List<SearchSuggestion> mAllSuggestions;
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            if (mAllSuggestions == null) {
+                //QueryDB for recent queries
+                mAllSuggestions = RecentQueriesHelper.getInstance(getContext())
+                                                     .getAllRecentQueries();
+            }
+
+            List<SearchSuggestion> filteredList = new ArrayList<>();
+            for (SearchSuggestion suggestion : mAllSuggestions) {
+                if (constraint.length() == 0 || suggestion.matchesConstraint(constraint)) {
+                    filteredList.add(suggestion);
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            results.count = filteredList.size();
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mSuggestionsListAdapter.clear();
+            List suggestions = (List)results.values;
+            if (suggestions != null) {
+                for (Object obj : suggestions) {
+                    mSuggestionsListAdapter.add((SearchSuggestion) obj);
+                }
+            }
+        }
     }
 }

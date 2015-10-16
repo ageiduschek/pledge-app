@@ -6,8 +6,17 @@
     <ListView
         android:id="@+id/lvSearchSuggestions"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_margin="5dp"
+        android:background="#2200FF00"
         android:elevation="4dp"
+        />
+
+    <ListView
+        android:id="@+id/lvSearchResults"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="#2200FF00"
         />
 </LinearLayout>

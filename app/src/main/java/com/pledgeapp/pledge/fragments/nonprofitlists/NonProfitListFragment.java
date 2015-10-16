@@ -19,7 +19,6 @@ import com.pledgeapp.pledge.models.NonProfit;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -59,14 +58,7 @@ public abstract class NonProfitListFragment extends Fragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 aNonProfits.clear();
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject nonProfitJson = response.getJSONObject(i);
-                        aNonProfits.add(NonProfit.fromJson(nonProfitJson));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+                aNonProfits.addAll(NonProfit.fromJSONArray(response));
             }
 
             @Override

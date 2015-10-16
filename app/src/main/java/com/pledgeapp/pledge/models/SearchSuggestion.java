@@ -23,4 +23,12 @@ public class SearchSuggestion {
         return queryString;
     }
 
+    // TODO: Make this smarter
+    public boolean matchesConstraint(CharSequence constraint) {
+        if (nonProfit != null) {
+            return nonProfit.getName().contains(constraint);
+        } else {
+            return queryString.contains(constraint);
+        }
+    }
 }

@@ -1,7 +1,11 @@
 package com.pledgeapp.pledge.models;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by nikhil on 10/14/15.
@@ -35,6 +39,20 @@ public class NonProfit {
         }
 
         return nonProfit;
+    }
+
+    public static List<NonProfit> fromJSONArray(JSONArray array) {
+        List<NonProfit> nonProfits = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            try {
+                JSONObject nonProfitJson = array.getJSONObject(i);
+                nonProfits.add(NonProfit.fromJson(nonProfitJson));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return nonProfits;
     }
 
     public String getId() {
