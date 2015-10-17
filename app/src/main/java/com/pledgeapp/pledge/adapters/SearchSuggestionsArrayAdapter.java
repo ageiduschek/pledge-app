@@ -15,7 +15,9 @@ import com.pledgeapp.pledge.models.SearchSuggestion;
 import java.util.List;
 
 public class SearchSuggestionsArrayAdapter extends ArrayAdapter<SearchSuggestion> implements Filterable {
+    private static final int LIST_MAX_SIZE = 5;
 
+    private final List<SearchSuggestion> mItems;
     private Filter mFilter;
 
     public class ViewHolder {
@@ -27,6 +29,7 @@ public class SearchSuggestionsArrayAdapter extends ArrayAdapter<SearchSuggestion
                                          Filter suggestionsFilter) {
         super(context, R.layout.item_search_suggestion, objects);
         mFilter = suggestionsFilter;
+        mItems = objects;
     }
 
     @Override
@@ -53,5 +56,10 @@ public class SearchSuggestionsArrayAdapter extends ArrayAdapter<SearchSuggestion
     @Override
     public Filter getFilter() {
         return mFilter;
+    }
+
+    @Override
+    public int getCount() {
+        return Math.min(LIST_MAX_SIZE, mItems.size());
     }
 }

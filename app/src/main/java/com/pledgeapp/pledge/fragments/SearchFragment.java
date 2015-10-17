@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +19,14 @@ import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.adapters.NonProfitArrayAdapter;
 import com.pledgeapp.pledge.adapters.SearchSuggestionsArrayAdapter;
+import com.pledgeapp.pledge.helpers.Util;
 import com.pledgeapp.pledge.models.NonProfit;
 import com.pledgeapp.pledge.models.RecentQueriesHelper;
 import com.pledgeapp.pledge.models.SearchSuggestion;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +47,8 @@ public class SearchFragment extends Fragment {
     private NonProfitArrayAdapter mResultsListAdapter;
     private ListView mLvResults;
 
+    private SearchView mSearchView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -58,29 +63,32 @@ public class SearchFragment extends Fragment {
         mLvSuggestions.setAdapter(mSuggestionsListAdapter);
         mLvSuggestions.setTextFilterEnabled(true);
         mSuggestionsListAdapter.getFilter().filter("");
+
         mLvSuggestions.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 SearchSuggestionsArrayAdapter.ViewHolder tag
                         = (SearchSuggestionsArrayAdapter.ViewHolder) view.getTag();
-                doSearchQuery(view, tag.suggestionText.getText().toString());
-                mSuggestionsListAdapter.clear();
+                doSearchQuery(tag.suggestionText.getText().toString());
             }
         });
-
 
         mLvResults = (ListView) view.findViewById(R.id.lvSearchResults);
         mResultsListAdapter = new NonProfitArrayAdapter(getContext(), new ArrayList<NonProfit>());
         mLvResults.setAdapter(mResultsListAdapter);
+
+        mLvSuggestions.setVisibility(View.VISIBLE);
+        mLvResults.setVisibility(View.GONE);
         return view;
     }
 
     // TODO (ageiduschek): Figure out how to register this listener only after onCreateView()
     public void registerSearchView(final SearchView searchView) {
-        searchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
+        mSearchView = searchView;
+        mSearchView.setOnQueryTextListener(new android.support.v7.widget.SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                doSearchQuery(searchView, searchView.getQuery().toString());
+                doSearchQuery(mSearchView.getQuery().toString());
                 return true;
             }
 
@@ -92,6 +100,12 @@ public class SearchFragment extends Fragment {
                     } else {
                         mSuggestionsListAdapter.getFilter().filter(newText);
                     }
+                    if (mResultsListAdapter != null) {
+                        mResultsListAdapter.clear();
+                    }
+
+                    mLvSuggestions.setVisibility(View.VISIBLE);
+                    mLvResults.setVisibility(View.GONE);
                 }
                 return true;
             }
@@ -104,19 +118,34 @@ public class SearchFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private void doSearchQuery(View view, String query) {
+    private void doSearchQuery(String query) {
         RecentQueriesHelper.getInstance(getContext()).addOrUpdateQuery(query);
-        PledgeClient client = ((PledgeApplication) getActivity().getApplication()).getPledgeClient();
-        client.search(query, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                mResultsListAdapter.clear();
-                List<NonProfit> nonProfits = NonProfit.fromJSONArray(response);
-                mResultsListAdapter.addAll(nonProfits);
-            }
-        });
-        hideSoftKeyboard(view);
 
+        mSearchView.setQuery(query, false /*submit query*/);
+
+        if (Util.isNetworkAvailable(getContext())) {
+            PledgeClient client = ((PledgeApplication) getActivity().getApplication()).getPledgeClient();
+            client.search(query, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                    mResultsListAdapter.clear();
+                    List<NonProfit> nonProfits = NonProfit.fromJSONArray(response);
+                    mResultsListAdapter.addAll(nonProfits);
+                    mLvSuggestions.setVisibility(View.GONE);
+                    mLvResults.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    Util.displayNetworkErrorToast(getContext());
+                }
+
+            });
+        } else {
+            Util.displayNetworkErrorToast(getContext());
+        }
+
+        hideSoftKeyboard(mSearchView);
     }
 
     private class SuggestionsFilter extends Filter {
@@ -125,11 +154,9 @@ public class SearchFragment extends Fragment {
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            if (mAllSuggestions == null) {
-                //QueryDB for recent queries
-                mAllSuggestions = RecentQueriesHelper.getInstance(getContext())
-                                                     .getAllRecentQueries();
-            }
+            //QueryDB for recent queries
+            mAllSuggestions = RecentQueriesHelper.getInstance(getContext())
+                                                 .getAllRecentQueries();
 
             List<SearchSuggestion> filteredList = new ArrayList<>();
             for (SearchSuggestion suggestion : mAllSuggestions) {
