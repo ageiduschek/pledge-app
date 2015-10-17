@@ -16,12 +16,12 @@ public class NonProfit {
 //    private Category category;
     private int category;
     private String missionStatement;
-    private double longitude;
-    private double latitude;
-//    Address address;
-//    String guideStarUrl;
-//    String websiteUrl
-//    long ein;
+    private String address;
+    private String city;
+    private String state;
+    private String guideStarUrl;
+    private String websiteUrl;
+    private long ein;
 //    FeaturedReason featuredReason
 
     public static NonProfit fromJson(JSONObject nonProfitJson) {
@@ -32,8 +32,12 @@ public class NonProfit {
             nonProfit.name = nonProfitJson.getString("name");
             nonProfit.category = nonProfitJson.getInt("category");
             nonProfit.missionStatement = nonProfitJson.getString("mission_statement");
-            nonProfit.longitude = nonProfitJson.getDouble("longitude");
-            nonProfit.latitude = nonProfitJson.getDouble("latitude");
+            nonProfit.address = nonProfitJson.getString("address");
+            nonProfit.city = nonProfitJson.getString("city");
+            nonProfit.state = nonProfitJson.getString("state");
+            nonProfit.guideStarUrl = nonProfitJson.getString("guidestar_url");
+            nonProfit.websiteUrl = nonProfitJson.getString("website_url");
+            nonProfit.ein = nonProfitJson.getLong("ein");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -71,11 +75,27 @@ public class NonProfit {
         return missionStatement;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public String getAddress() {
+        return address;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public String getCity() {
+        return city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public String getGuideStarUrl() {
+        return guideStarUrl;
+    }
+
+    public String getWebsiteUrl() {
+        return websiteUrl;
+    }
+
+    public long getEin() {
+        return ein;
     }
 }

@@ -43,6 +43,20 @@ public class PledgeClient {
         mClient.get(apiUrl, params, handler);
 	}
 
+	public void search(String query, AsyncHttpResponseHandler handler) {
+		search(query, 0, handler);
+	}
+
+	public void search(String query, int page, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("/search");
+
+        RequestParams params = new RequestParams();
+        params.put("q", query);
+        params.put("page", page);
+
+        mClient.get(apiUrl, params, handler);
+	}
+
     protected String getApiUrl(String path) {
         return PLEDGE_SERVICE_BASE_URL + "/" + path;
     }

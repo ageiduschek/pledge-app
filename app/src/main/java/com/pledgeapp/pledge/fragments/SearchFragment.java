@@ -107,7 +107,7 @@ public class SearchFragment extends Fragment {
     private void doSearchQuery(View view, String query) {
         RecentQueriesHelper.getInstance(getContext()).addOrUpdateQuery(query);
         PledgeClient client = ((PledgeApplication) getActivity().getApplication()).getPledgeClient();
-        client.getFeatured(new JsonHttpResponseHandler() {
+        client.search(query, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 mResultsListAdapter.clear();
