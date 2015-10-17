@@ -4,9 +4,14 @@
                 android:layout_height="match_parent"
                 tools:context="com.pledgeapp.pledge.activities.AddPaymentActivity">
 
-    <TextView
-        android:text="ADD PAYMENT"
+    <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="Scan Credit Card"
+        android:id="@+id/btScanCreditCard"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        />
 
 </RelativeLayout>
