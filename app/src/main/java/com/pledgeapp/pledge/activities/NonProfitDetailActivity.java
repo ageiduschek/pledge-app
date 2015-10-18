@@ -2,10 +2,14 @@ package com.pledgeapp.pledge.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.pledgeapp.pledge.R;
@@ -32,14 +36,24 @@ public class NonProfitDetailActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        NonProfit nonProfit = getIntent().getParcelableExtra(KEY_NON_PROFIT);
+        final NonProfit nonProfit = getIntent().getParcelableExtra(KEY_NON_PROFIT);
 
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitleEnabled(true);
         collapsingToolbar.setTitle(nonProfit.getName());
 
+        FloatingActionButton btnDonate = (FloatingActionButton) findViewById(R.id.btnDonate);
+        btnDonate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(DonateActivity.getLaunchIntent(NonProfitDetailActivity.this, nonProfit));
+            }
+        });
+
         fillViewWithData(nonProfit);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     private void fillViewWithData(NonProfit nonProfit) {

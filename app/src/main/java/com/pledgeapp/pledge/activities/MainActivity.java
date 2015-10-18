@@ -2,6 +2,7 @@ package com.pledgeapp.pledge.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -41,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //TODO(ageiduschek): Fix screen rotation bug with this info http://stackoverflow.com/a/27690095
         setContentView(R.layout.activity_main);
         // Set a Toolbar to replace the ActionBar.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -59,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Set default to first item
         selectDrawerItem(R.id.nav_browse);
+
+        //TODO(ageiduschek): Fix screen rotation bug with this info http://stackoverflow.com/a/27690095
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     private void setupDrawerContent() {

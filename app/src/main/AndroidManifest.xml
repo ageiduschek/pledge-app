@@ -71,7 +71,11 @@
         <activity
             android:name=".activities.NonProfitDetailActivity"
             android:label="@string/title_activity_non_profit_detail"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity" >
+        </activity>
+        <activity
+            android:name=".activities.DonateActivity"
+            android:label="@string/title_activity_choose_amount">
         </activity>
     </application>
 

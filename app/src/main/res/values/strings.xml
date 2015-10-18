@@ -31,5 +31,6 @@
     <string name="basic_information_title">Basic Information</string>
     <string name="guidestar_url">GuideStart URL</string>
     <string name="website">Website</string>
+    <string name="title_activity_choose_amount">ChooseAmountActivity</string>
 
 </resources>
