@@ -3,11 +3,10 @@ package com.pledgeapp.pledge.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.pledgeapp.pledge.R;
@@ -68,7 +67,7 @@ public class DonateActivity extends AppCompatActivity implements AddPaymentFragm
     }
 
     @Override
-    public void onPaymentSuccessfullySubmitted() {
+    public void onPaymentSuccessfullyAdded() {
         Fragment fragment = EnterDonationAmountFragment.newInstance(mNonProfit);
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.flFragmentContainer, fragment).commit();

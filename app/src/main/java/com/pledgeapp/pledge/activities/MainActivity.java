@@ -27,12 +27,14 @@ import com.pledgeapp.pledge.fragments.DonationHistoryFragment;
 import com.pledgeapp.pledge.fragments.LinkEmployerFragment;
 import com.pledgeapp.pledge.fragments.SearchFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AddPaymentFragment.AddPaymentFragmentListener {
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNvDrawer;
     private MenuItem mSearchMenuItem;
+
+    private AddPaymentFragment mAddPaymentFragment;
 
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, MainActivity.class);
@@ -111,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 fragmentManager.beginTransaction().replace(R.id.flFragmentContainer,
-                                                           BrowseFragment.newInstance()).commit();
+                        BrowseFragment.newInstance()).commit();
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 return true; // Return true to collapse action view
             }
@@ -122,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 SearchFragment searchFragment = SearchFragment.newInstance();
                 searchFragment.registerSearchView(searchView);
                 fragmentManager.beginTransaction().replace(R.id.flFragmentContainer,
-                                                           searchFragment).commit();
+                        searchFragment).commit();
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                 return true;
             }
@@ -145,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = null;
         try {
             fragment = fragmentClass.newInstance();
+            if (fragmentClass == AddPaymentFragment.class) {
+                mAddPaymentFragment = (AddPaymentFragment) fragment;
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -193,5 +198,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return fragmentClass;
+    }
+
+    @Override
+    public void onScanCardRequested(Intent launchIntent) {
+        startActivityForResult(launchIntent, AddPaymentFragment.REQUEST_CODE_SCAN_CREDIT_CARD);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == AddPaymentFragment.REQUEST_CODE_SCAN_CREDIT_CARD) {
+            mAddPaymentFragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onPaymentSuccessfullyAdded() {
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction().replace(R.id.flFragmentContainer, mAddPaymentFragment).commit();
     }
 }
