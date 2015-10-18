@@ -1,5 +1,8 @@
 package com.pledgeapp.pledge.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,7 +13,7 @@ import java.util.List;
 /**
  * Created by nikhil on 10/14/15.
  */
-public class NonProfit {
+public class NonProfit implements Parcelable {
     private String id;
     private String name;
 //    private Category category;
@@ -98,4 +101,49 @@ public class NonProfit {
     public long getEin() {
         return ein;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.name);
+        dest.writeInt(this.category);
+        dest.writeString(this.missionStatement);
+        dest.writeString(this.address);
+        dest.writeString(this.city);
+        dest.writeString(this.state);
+        dest.writeString(this.guideStarUrl);
+        dest.writeString(this.websiteUrl);
+        dest.writeLong(this.ein);
+    }
+
+    public NonProfit() {
+    }
+
+    private NonProfit(Parcel in) {
+        this.id = in.readString();
+        this.name = in.readString();
+        this.category = in.readInt();
+        this.missionStatement = in.readString();
+        this.address = in.readString();
+        this.city = in.readString();
+        this.state = in.readString();
+        this.guideStarUrl = in.readString();
+        this.websiteUrl = in.readString();
+        this.ein = in.readLong();
+    }
+
+    public static final Parcelable.Creator<NonProfit> CREATOR = new Parcelable.Creator<NonProfit>() {
+        public NonProfit createFromParcel(Parcel source) {
+            return new NonProfit(source);
+        }
+
+        public NonProfit[] newArray(int size) {
+            return new NonProfit[size];
+        }
+    };
 }

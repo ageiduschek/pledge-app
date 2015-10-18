@@ -17,6 +17,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pledgeapp.pledge.PledgeApplication;
 import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
+import com.pledgeapp.pledge.activities.NonProfitDetailActivity;
 import com.pledgeapp.pledge.adapters.NonProfitArrayAdapter;
 import com.pledgeapp.pledge.adapters.SearchSuggestionsArrayAdapter;
 import com.pledgeapp.pledge.helpers.Util;
@@ -76,6 +77,13 @@ public class SearchFragment extends Fragment {
         mLvResults = (ListView) view.findViewById(R.id.lvSearchResults);
         mResultsListAdapter = new NonProfitArrayAdapter(getContext(), new ArrayList<NonProfit>());
         mLvResults.setAdapter(mResultsListAdapter);
+        mLvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startActivity(NonProfitDetailActivity.getLaunchIntent(getContext(),
+                                                                      mResultsListAdapter.getItem(position)));
+            }
+        });
 
         mLvSuggestions.setVisibility(View.VISIBLE);
         mLvResults.setVisibility(View.GONE);

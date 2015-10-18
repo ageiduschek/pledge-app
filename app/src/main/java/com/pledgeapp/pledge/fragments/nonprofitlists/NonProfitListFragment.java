@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pledgeapp.pledge.PledgeApplication;
 import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
+import com.pledgeapp.pledge.activities.NonProfitDetailActivity;
 import com.pledgeapp.pledge.adapters.NonProfitArrayAdapter;
 import com.pledgeapp.pledge.models.NonProfit;
 
@@ -51,6 +53,13 @@ public abstract class NonProfitListFragment extends Fragment {
 
         lvNonProfits = (ListView) v.findViewById(R.id.lvNonProfits);
         lvNonProfits.setAdapter(aNonProfits);
+        lvNonProfits.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startActivity(NonProfitDetailActivity.getLaunchIntent(getContext(),
+                                                                      aNonProfits.getItem(position)));
+            }
+        });
 
         // TODO(nikhilb): Add EndlessScrollListener when the server supports paging
 

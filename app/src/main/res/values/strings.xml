@@ -26,5 +26,6 @@
     <string name="search">Search</string>
     <string name="sign_out">Sign out</string>
     <string name="network_error">Network Error</string>
+    <string name="title_activity_non_profit_detail">NonProfitDetailActivity</string>
 
 </resources>

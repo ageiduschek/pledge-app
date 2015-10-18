@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNvDrawer;
-    private SearchView mSearchView;
     private MenuItem mSearchMenuItem;
 
     public static Intent getLaunchIntent(Context context) {
