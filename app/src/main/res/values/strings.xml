@@ -27,5 +27,9 @@
     <string name="sign_out">Sign out</string>
     <string name="network_error">Network Error</string>
     <string name="title_activity_non_profit_detail">NonProfitDetailActivity</string>
+    <string name="mission_statement_title">Mission Statement</string>
+    <string name="basic_information_title">Basic Information</string>
+    <string name="guidestar_url">GuideStart URL</string>
+    <string name="website">Website</string>
 
 </resources>

@@ -74,6 +74,26 @@ public class NonProfit implements Parcelable {
         return category;
     }
 
+    public String getCategoryName() {
+        //TODO: Make these string resources
+        switch (category) {
+            //TODO: Fix
+            case 0: return "THIS IS A BAD CATEGORY - WE SHOULDN'T START WTIH 0";
+            case 1: return "Arts, Culture and Humanities";
+            case 2: return "Education";
+            case 3: return "Environment and Animals";
+            case 4: return "Health";
+            case 5: return "Human Services";
+            case 6: return "International";
+            case 7: return "Public, Societal Benefit";
+            case 8: return "Religion";
+            case 9: return "Mutual/Membership Benefit";
+            case 10: return "Unknown, Unclassified";
+            default:
+                throw new RuntimeException("Unknown category name : " + category);
+        }
+    }
+
     public String getMissionStatement() {
         return missionStatement;
     }
