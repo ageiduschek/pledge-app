@@ -16,7 +16,7 @@ import com.loopj.android.http.RequestParams;
  * 
  */
 public class PledgeClient {
-	public static final String PLEDGE_SERVICE_BASE_URL = "https://pledge-flask.appspot.com";
+	public static final String PLEDGE_SERVICE_BASE_URL = "http://146.148.84.121";
 
     private AsyncHttpClient mClient;
 
@@ -58,7 +58,7 @@ public class PledgeClient {
 	}
 
     protected String getApiUrl(String path) {
-        return PLEDGE_SERVICE_BASE_URL + "/" + path;
+        return PLEDGE_SERVICE_BASE_URL + path;
     }
 
 }
