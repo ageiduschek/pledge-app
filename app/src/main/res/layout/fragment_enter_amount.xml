@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvEnterAmountDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textSize="28sp"
+        android:gravity="center"
+        android:text="@string/enter_amount_plea"/>
+    <TextView
+        android:id="@+id/tvNonProfitName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="32sp"
+        android:gravity="center"
+        android:layout_alignStart="@+id/tvEnterAmountDescription"
+        android:layout_alignEnd="@+id/tvEnterAmountDescription"
+        android:layout_below="@+id/tvEnterAmountDescription"
+        />
+
+    <EditText
+        android:id="@+id/etDonationAmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:layout_above="@+id/btnSubmitDonation"
+        android:layout_below="@+id/tvNonProfitName"
+        android:textSize="50sp"
+        android:singleLine="true"
+        android:gravity="center"
+        android:background="@android:color/transparent"
+        />
 
     <Button
         android:id="@+id/btnSubmitDonation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Donate"
+        android:layout_alignParentBottom="true"
+        android:text="@string/submit_donation"
         />
 </RelativeLayout>
