@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,14 +28,14 @@ import com.pledgeapp.pledge.fragments.DonationHistoryFragment;
 import com.pledgeapp.pledge.fragments.LinkEmployerFragment;
 import com.pledgeapp.pledge.fragments.SearchFragment;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements AddPaymentFragment.AddPaymentFragmentListener {
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNvDrawer;
     private MenuItem mSearchMenuItem;
-
-    private AddPaymentFragment mAddPaymentFragment;
 
     public static Intent getLaunchIntent(Context context) {
         return new Intent(context, MainActivity.class);
@@ -112,8 +113,7 @@ public class MainActivity extends AppCompatActivity implements AddPaymentFragmen
         MenuItemCompat.setOnActionExpandListener(mSearchMenuItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
-                fragmentManager.beginTransaction().replace(R.id.flFragmentContainer,
-                        BrowseFragment.newInstance()).commit();
+                attachFragmentToContainer(BrowseFragment.class);
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
                 return true; // Return true to collapse action view
             }
@@ -121,10 +121,9 @@ public class MainActivity extends AppCompatActivity implements AddPaymentFragmen
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 SearchView searchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
-                SearchFragment searchFragment = SearchFragment.newInstance();
+                SearchFragment searchFragment = attachFragmentToContainer(SearchFragment.class);
                 searchFragment.registerSearchView(searchView);
-                fragmentManager.beginTransaction().replace(R.id.flFragmentContainer,
-                        searchFragment).commit();
+
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
                 return true;
             }
@@ -143,22 +142,7 @@ public class MainActivity extends AppCompatActivity implements AddPaymentFragmen
 
     private void selectDrawerItem(int menuItemId) {
         Class<? extends Fragment> fragmentClass = getClassFromId(menuItemId);
-
-        Fragment fragment = null;
-        try {
-            fragment = fragmentClass.newInstance();
-            if (fragmentClass == AddPaymentFragment.class) {
-                mAddPaymentFragment = (AddPaymentFragment) fragment;
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flFragmentContainer, fragment).commit();
-
-
+        attachFragmentToContainer(fragmentClass);
 
         // Highlight the selected item, update the title, and close the drawer
         MenuItem menuItem = mNvDrawer.getMenu().findItem(menuItemId);
@@ -175,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements AddPaymentFragmen
         }
     }
 
-    public Class<? extends Fragment> getClassFromId(int itemId) {
+    private Class<? extends Fragment> getClassFromId(int itemId) {
         Class<? extends Fragment> fragmentClass;
         switch(itemId) {
             case R.id.nav_browse:
@@ -209,13 +193,67 @@ public class MainActivity extends AppCompatActivity implements AddPaymentFragmen
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == AddPaymentFragment.REQUEST_CODE_SCAN_CREDIT_CARD) {
-            mAddPaymentFragment.onActivityResult(requestCode, resultCode, data);
+            getAddPaymentFragment().onActivityResult(requestCode, resultCode, data);
         }
     }
 
     @Override
     public void onPaymentSuccessfullyAdded() {
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.beginTransaction().replace(R.id.flFragmentContainer, mAddPaymentFragment).commit();
+        // TODO: implement
+    }
+
+    private static final ArrayList<Class<? extends Fragment>> mFragmentClasses = getFragmentClasses();
+
+    private <T extends Fragment> T attachFragmentToContainer(Class<T> fragmentClassToAdd) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        FragmentTransaction txn = fragmentManager.beginTransaction();
+
+        for (Class fragmentClass : mFragmentClasses) {
+            if (!fragmentClass.equals(fragmentClassToAdd)) {
+                if (fragmentManager.findFragmentByTag(getFragmentTag(fragmentClass)) != null) {
+                    txn.detach(fragmentManager.findFragmentByTag(getFragmentTag(fragmentClass)));
+                }
+            }
+        }
+
+
+        T attachedFragment;
+        String tag = getFragmentTag(fragmentClassToAdd);
+        if (fragmentManager.findFragmentByTag(tag) == null) {
+            try {
+                attachedFragment = fragmentClassToAdd.newInstance();
+                txn.add(R.id.flFragmentContainer, attachedFragment, tag);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            attachedFragment = (T)fragmentManager.findFragmentByTag(tag);
+        }
+        txn.attach(attachedFragment);
+
+        txn.commit();
+
+        return attachedFragment;
+    }
+
+    private String getFragmentTag(Class fragmentClass) {
+        return this.getClass().getSimpleName() + fragmentClass.getSimpleName();
+    }
+
+    private static ArrayList<Class<? extends Fragment>> getFragmentClasses() {
+        ArrayList<Class<? extends Fragment>> fragmentClasses = new ArrayList<>();
+        fragmentClasses.add(BrowseFragment.class);
+        fragmentClasses.add(DonationHistoryFragment.class);
+        fragmentClasses.add(AddPaymentFragment.class);
+        fragmentClasses.add(LinkEmployerFragment.class);
+        fragmentClasses.add(AccountSettingsFragment.class);
+        fragmentClasses.add(SearchFragment.class);
+        return fragmentClasses;
+    }
+
+    private AddPaymentFragment getAddPaymentFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        return (AddPaymentFragment) fragmentManager.findFragmentByTag(getFragmentTag(AddPaymentFragment.class));
     }
 }

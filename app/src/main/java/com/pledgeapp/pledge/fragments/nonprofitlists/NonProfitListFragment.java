@@ -31,16 +31,13 @@ import java.util.ArrayList;
 public abstract class NonProfitListFragment extends Fragment {
 
     protected PledgeClient client;
-    private ArrayList<NonProfit> nonProfits;
     private NonProfitArrayAdapter aNonProfits;
-
-    private ListView lvNonProfits;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        nonProfits = new ArrayList<>();
+        ArrayList<NonProfit> nonProfits = new ArrayList<>();
         aNonProfits = new NonProfitArrayAdapter(getActivity(), nonProfits);
 
         client = ((PledgeApplication)getActivity().getApplication()).getPledgeClient();
@@ -51,7 +48,7 @@ public abstract class NonProfitListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_nonprofit_list, container, false);
 
-        lvNonProfits = (ListView) v.findViewById(R.id.lvNonProfits);
+        ListView lvNonProfits = (ListView) v.findViewById(R.id.lvNonProfits);
         lvNonProfits.setAdapter(aNonProfits);
         lvNonProfits.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -72,7 +69,7 @@ public abstract class NonProfitListFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                if  (errorResponse != null) {
+                if (errorResponse != null) {
                     Log.d("DEBUG", errorResponse.toString());
 
                 }

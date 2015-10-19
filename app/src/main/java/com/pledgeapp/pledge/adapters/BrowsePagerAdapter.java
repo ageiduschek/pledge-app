@@ -2,7 +2,6 @@ package com.pledgeapp.pledge.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 
 import com.pledgeapp.pledge.fragments.AccountSettingsFragment;
 import com.pledgeapp.pledge.fragments.nonprofitlists.FeaturedNonProfitsFragment;
@@ -11,7 +10,7 @@ import com.pledgeapp.pledge.fragments.nonprofitlists.LocalNonProfitsFragment;
 /**
  * Created by nikhil on 10/14/15.
  */
-public class BrowsePagerAdapter extends FragmentPagerAdapter {
+public class BrowsePagerAdapter extends SmartFragmentStatePagerAdapter {
 
     private static final String[] TAB_TITLES = {"Featured", "Categories", "Local"};
 
