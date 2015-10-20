@@ -35,4 +35,19 @@ public final class Util {
         Toast.makeText(context, R.string.network_error, Toast.LENGTH_SHORT).show();
 
     }
+
+    public static String titleProperCase(String title) {
+        StringBuilder resultBuilder = new StringBuilder();
+        String [] tokens = title.toLowerCase().split(" ");
+
+        for (int i = 0; i < tokens.length; i++) {
+            String capitalizedStr = String.valueOf(tokens[i].charAt(0)).toUpperCase() + tokens[i].substring(1);
+            resultBuilder.append(capitalizedStr);
+            if (i < tokens.length - 1) {
+                resultBuilder.append(' ');
+            }
+        }
+
+        return resultBuilder.toString();
+    }
 }
