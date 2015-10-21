@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -16,8 +17,7 @@ import java.util.List;
 public class NonProfit implements Parcelable {
     private String id;
     private String name;
-//    private Category category;
-    private int category;
+    private String nteeCode;
     private String missionStatement;
     private String address;
     private String city;
@@ -33,7 +33,7 @@ public class NonProfit implements Parcelable {
         try {
             nonProfit.id = nonProfitJson.getString("id");
             nonProfit.name = nonProfitJson.getString("name");
-            nonProfit.category = nonProfitJson.getInt("category");
+            nonProfit.nteeCode = nonProfitJson.getString("category");
             nonProfit.missionStatement = nonProfitJson.getString("mission_statement");
             nonProfit.address = nonProfitJson.getString("address");
             nonProfit.city = nonProfitJson.getString("city");
@@ -70,28 +70,25 @@ public class NonProfit implements Parcelable {
         return name;
     }
 
-    public int getCategory() {
-        return category;
+    //TODO: Actually load these from the server
+    private HashMap<String, String> mNTEECodeToName = new HashMap<>();
+    public String getCategoryName() {
+        //return mNTEECodeToName.get(nteeCode);
+        return nteeCode;
     }
 
-    public String getCategoryName() {
-        //TODO: Make these string resources
-        switch (category) {
-            //TODO: Fix
-            case 0: return "THIS IS A BAD CATEGORY - WE SHOULDN'T START WTIH 0";
-            case 1: return "Arts, Culture and Humanities";
-            case 2: return "Education";
-            case 3: return "Environment and Animals";
-            case 4: return "Health";
-            case 5: return "Human Services";
-            case 6: return "International";
-            case 7: return "Public, Societal Benefit";
-            case 8: return "Religion";
-            case 9: return "Mutual/Membership Benefit";
-            case 10: return "Unknown, Unclassified";
-            default:
-                throw new RuntimeException("Unknown category name : " + category);
-        }
+    public static ArrayList<CategoryInfo> getMajorCategoryNames() {
+        ArrayList<CategoryInfo> result = new ArrayList<>();
+        result.add(new CategoryInfo(1, "Arts, Culture and Humanities"));
+        result.add(new CategoryInfo(2, "Education"));
+        result.add(new CategoryInfo(3, "Environment and Animals"));
+        result.add(new CategoryInfo(4, "Health"));
+        result.add(new CategoryInfo(5, "Human Services"));
+        result.add(new CategoryInfo(6, "International"));
+        result.add(new CategoryInfo(7, "Public, Societal Benefit"));
+        result.add(new CategoryInfo(8, "Religion"));
+        result.add(new CategoryInfo(9, "Mutual/Membership Benefit"));
+        return result;
     }
 
     public String getMissionStatement() {
@@ -131,7 +128,7 @@ public class NonProfit implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.id);
         dest.writeString(this.name);
-        dest.writeInt(this.category);
+        dest.writeString(this.nteeCode);
         dest.writeString(this.missionStatement);
         dest.writeString(this.address);
         dest.writeString(this.city);
@@ -147,7 +144,7 @@ public class NonProfit implements Parcelable {
     private NonProfit(Parcel in) {
         this.id = in.readString();
         this.name = in.readString();
-        this.category = in.readInt();
+        this.nteeCode = in.readString();
         this.missionStatement = in.readString();
         this.address = in.readString();
         this.city = in.readString();
@@ -166,4 +163,14 @@ public class NonProfit implements Parcelable {
             return new NonProfit[size];
         }
     };
+
+    public static class CategoryInfo {
+        public int searchIndex;
+        public String name;
+
+        public CategoryInfo(int searchIndex, String name) {
+            this.searchIndex = searchIndex;
+            this.name = name;
+        }
+    }
 }

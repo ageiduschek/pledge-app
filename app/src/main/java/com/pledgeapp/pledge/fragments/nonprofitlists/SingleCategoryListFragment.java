@@ -4,18 +4,18 @@ import android.os.Bundle;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-public class FeaturedNonProfitsFragment extends NonProfitListFragment {
-    public static FeaturedNonProfitsFragment newInstance() {
+public class SingleCategoryListFragment extends NonProfitListFragment {
+    public static SingleCategoryListFragment newInstance() {
 
         Bundle args = new Bundle();
 
-        FeaturedNonProfitsFragment fragment = new FeaturedNonProfitsFragment();
+        SingleCategoryListFragment fragment = new SingleCategoryListFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     protected void fetchNonProfits(JsonHttpResponseHandler handler) {
-        client.getFeatured(handler);
+        client.search("", handler);
     }
 }

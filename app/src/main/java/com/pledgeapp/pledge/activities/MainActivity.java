@@ -27,10 +27,13 @@ import com.pledgeapp.pledge.fragments.BrowseFragment;
 import com.pledgeapp.pledge.fragments.DonationHistoryFragment;
 import com.pledgeapp.pledge.fragments.LinkEmployerFragment;
 import com.pledgeapp.pledge.fragments.SearchFragment;
+import com.pledgeapp.pledge.fragments.nonprofitlists.CategoriesSelectionListFragment;
+import com.pledgeapp.pledge.models.NonProfit;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements AddPaymentFragment.AddPaymentFragmentListener {
+public class MainActivity extends AppCompatActivity implements AddPaymentFragment.AddPaymentFragmentListener,
+        CategoriesSelectionListFragment.OnCategorySelectedListener {
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
@@ -255,5 +258,11 @@ public class MainActivity extends AppCompatActivity implements AddPaymentFragmen
     private AddPaymentFragment getAddPaymentFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         return (AddPaymentFragment) fragmentManager.findFragmentByTag(getFragmentTag(AddPaymentFragment.class));
+    }
+
+    @Override
+    public void onCategorySelected(NonProfit.CategoryInfo info) {
+        // attachFragmentToContainer(SingleCategoryListFragment.class);
+        // TOOD: Handle category clicks!
     }
 }

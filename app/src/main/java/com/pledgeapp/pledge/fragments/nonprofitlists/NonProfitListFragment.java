@@ -46,9 +46,9 @@ public abstract class NonProfitListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_nonprofit_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_generic_list, container, false);
 
-        ListView lvNonProfits = (ListView) v.findViewById(R.id.lvNonProfits);
+        ListView lvNonProfits = (ListView) v.findViewById(R.id.lvList);
         lvNonProfits.setAdapter(aNonProfits);
         lvNonProfits.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

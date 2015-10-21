@@ -4,9 +4,6 @@ import android.os.Bundle;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-/**
- * Created by nikhil on 10/14/15.
- */
 public class LocalNonProfitsFragment extends NonProfitListFragment {
     public static FeaturedNonProfitsFragment newInstance() {
 

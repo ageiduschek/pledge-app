@@ -3,7 +3,7 @@ package com.pledgeapp.pledge.adapters;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
-import com.pledgeapp.pledge.fragments.AccountSettingsFragment;
+import com.pledgeapp.pledge.fragments.nonprofitlists.CategoriesSelectionListFragment;
 import com.pledgeapp.pledge.fragments.nonprofitlists.FeaturedNonProfitsFragment;
 import com.pledgeapp.pledge.fragments.nonprofitlists.LocalNonProfitsFragment;
 
@@ -24,13 +24,10 @@ public class BrowsePagerAdapter extends SmartFragmentStatePagerAdapter {
         if (position == 0) {
             return FeaturedNonProfitsFragment.newInstance();
         } else if (position == 1) {
-            // Categories tab
+            return CategoriesSelectionListFragment.newInstance();
         } else {
             return LocalNonProfitsFragment.newInstance();
         }
-
-        // TODO(nikhilb) remove this line after implementing all fragments
-        return AccountSettingsFragment.newInstance();
     }
 
     @Override
