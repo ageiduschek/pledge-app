@@ -2,7 +2,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nsvNonProfitInfoContainer"
         android:layout_width="match_parent"
@@ -30,8 +32,7 @@
                     <TextView
                         android:id="@+id/tvMissionStatement"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                    />
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
@@ -99,12 +100,17 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:collapsedTitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginStart="30dp"
+            app:expandedTitleMarginEnd="30dp"
+            android:fitsSystemWindows="true">
 
-            <!-- The ActionBar -->
+            <!--android:fitsSystemWindows="true"-->
+            <!--app:collapsedTitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"-->
+            <!--app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"-->
+            <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
+
             <include
                 layout="@layout/toolbar"
                 android:layout_width="match_parent"
@@ -112,18 +118,17 @@
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:layout_collapseMode="pin"/>
 
-
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-<android.support.design.widget.FloatingActionButton
-    android:id="@+id/btnDonate"
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:layout_gravity="end|bottom"
-    app:borderWidth="0dp"
-    android:layout_margin="15dp"
-    android:src="@drawable/ic_donate_dark"
-    android:scaleType="fitXY"
-    />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnDonate"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="end|bottom"
+        app:borderWidth="0dp"
+        android:layout_margin="15dp"
+        android:src="@drawable/ic_donate_dark"
+        android:scaleType="fitXY"
+        />
 </android.support.design.widget.CoordinatorLayout>
