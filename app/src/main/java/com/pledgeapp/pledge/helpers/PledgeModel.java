@@ -64,16 +64,14 @@ public class PledgeModel {
     public void createOrFindUser(String email, String firstName, String lastName) {
         AsyncHttpResponseHandler handler = new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 mUserRegistered = true;
                 runBlockingTasks();
             }
 
-            // TODO: Remove once this endpoint returns JSON!
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                mUserRegistered = true;
-                runBlockingTasks();
+                // TODO: Handle failure
             }
         };
 
@@ -88,6 +86,11 @@ public class PledgeModel {
                 mMainCategoriesLoaded = true;
                 runBlockingTasks();
             }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                // TODO: Handle failure
+            }
         };
 
         PledgeClient.getInstance().getMajorCategories(handler);
@@ -100,6 +103,11 @@ public class PledgeModel {
                 // TODO: parse data and store
                 mSubCategoriesLoaded = true;
                 runBlockingTasks();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                // TODO: Handle failure
             }
         };
 

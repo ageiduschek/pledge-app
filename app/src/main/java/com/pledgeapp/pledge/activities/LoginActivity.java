@@ -91,8 +91,8 @@ public class LoginActivity extends AppCompatActivity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
-                .addScope(new Scope(Scopes.PROFILE))
-                .addScope(new Scope(Scopes.EMAIL))
+                .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addScope(Plus.SCOPE_PLUS_PROFILE)
                 .build();
 
         PledgeApplication.setGoogleApiClient(mGoogleApiClient);
@@ -226,8 +226,8 @@ public class LoginActivity extends AppCompatActivity implements
     private void registerUser() {
         String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
         Person person = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-        String firstName = person.getName().getGivenName();
-        String lastName = person.getName().getFamilyName();
+        String firstName = "Anna"; //person.getName().getGivenName();
+        String lastName = "Geiduschek"; //person.getName().getFamilyName();
         PledgeApplication.getPledgeModel().createOrFindUser(email, firstName, lastName);
     }
 
