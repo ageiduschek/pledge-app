@@ -11,6 +11,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.models.NonProfit;
+import com.pledgeapp.pledge.models.User;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -45,8 +46,9 @@ public class PledgeModel {
     private final Context mContext;
     private boolean mMainCategoriesLoaded = false;
     private boolean mSubCategoriesLoaded = false;
-    private boolean mUserRegistered = false;
     private ArrayList<Runnable> mTasksPendingCredentials;
+
+    private User mUser;
 
     public PledgeModel(Context context) {
         mContext = context;
@@ -66,7 +68,7 @@ public class PledgeModel {
         AsyncHttpResponseHandler handler = new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                mUserRegistered = true;
+                mUser = User.fromJson(response);
                 runBlockingTasks();
             }
 
@@ -133,7 +135,7 @@ public class PledgeModel {
     }
 
     private boolean bootstrapComplete() {
-        return mMainCategoriesLoaded && mSubCategoriesLoaded && mUserRegistered;
+        return mMainCategoriesLoaded && mSubCategoriesLoaded && mUser != null;
     }
 
 
