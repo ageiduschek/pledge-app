@@ -246,6 +246,8 @@ public class PledgeModel {
                 }
             }
 
+            mCreditCards = creditCards;
+
             return creditCards;
         }
     }
