@@ -66,16 +66,14 @@
         <activity android:name=".activities.LogoutActivity" >
         </activity>
         <activity
-            android:name=".activities.NonProfitDetailActivity"
-            android:parentActivityName=".activities.MainActivity" >
+            android:name=".activities.NonProfitDetailActivity" >
         </activity>
         <activity
             android:name=".activities.DonateActivity"
             android:windowSoftInputMode="adjustResize" >
         </activity>
         <activity
-            android:name=".activities.CategoryBrowseActivity"
-            android:parentActivityName=".activities.MainActivity">
+            android:name=".activities.CategoryBrowseActivity">
         </activity>
     </application>
 

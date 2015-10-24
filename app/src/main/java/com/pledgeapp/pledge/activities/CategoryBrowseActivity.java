@@ -65,6 +65,15 @@ public class CategoryBrowseActivity extends BaseActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void setupSearchBar(Menu menu) {
         mSearchMenuItem = menu.findItem(R.id.action_search);
 

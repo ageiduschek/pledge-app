@@ -8,8 +8,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.pledgeapp.pledge.R;
@@ -77,5 +77,15 @@ public class NonProfitDetailActivity extends AppCompatActivity {
 
         TextView tvCategory = (TextView) findViewById(R.id.tvCategory);
         tvCategory.setText(nonProfit.getCategoryName());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
