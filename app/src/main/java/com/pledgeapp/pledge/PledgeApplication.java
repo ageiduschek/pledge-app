@@ -3,6 +3,7 @@ package com.pledgeapp.pledge;
 import android.content.Context;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.pledgeapp.pledge.helpers.PledgeModel;
 
 /*
  * This is the Android application itself and is used to configure various settings
@@ -15,17 +16,13 @@ import com.google.android.gms.common.api.GoogleApiClient;
  */
 public class PledgeApplication extends com.activeandroid.app.Application {
 	private static Context context;
-	private PledgeClient mPledgeClient;
+	private static PledgeModel pledgeModel;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		PledgeApplication.context = this;
-		mPledgeClient = new PledgeClient();
-	}
-
-	public PledgeClient getPledgeClient() {
-		return mPledgeClient;
+		PledgeApplication.pledgeModel = new PledgeModel(context);
 	}
 
 	private static GoogleApiClient mGoogleApiClient;
@@ -35,5 +32,9 @@ public class PledgeApplication extends com.activeandroid.app.Application {
 
 	public static GoogleApiClient getGoogleApiClient() {
 		return mGoogleApiClient;
+	}
+
+	public static PledgeModel getPledgeModel() {
+		return pledgeModel;
 	}
 }

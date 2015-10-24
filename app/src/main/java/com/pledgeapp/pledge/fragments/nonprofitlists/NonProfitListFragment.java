@@ -17,6 +17,8 @@ import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.activities.NonProfitDetailActivity;
 import com.pledgeapp.pledge.adapters.NonProfitArrayAdapter;
+import com.pledgeapp.pledge.helpers.PledgeModel;
+import com.pledgeapp.pledge.helpers.Util;
 import com.pledgeapp.pledge.models.NonProfit;
 
 import org.apache.http.Header;
@@ -24,13 +26,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by nikhil on 10/14/15.
  */
 public abstract class NonProfitListFragment extends Fragment {
 
-    protected PledgeClient client;
+    protected PledgeModel mPledgeModel;
     private NonProfitArrayAdapter aNonProfits;
 
     @Override
@@ -40,7 +43,7 @@ public abstract class NonProfitListFragment extends Fragment {
         ArrayList<NonProfit> nonProfits = new ArrayList<>();
         aNonProfits = new NonProfitArrayAdapter(getActivity(), nonProfits);
 
-        client = ((PledgeApplication)getActivity().getApplication()).getPledgeClient();
+        mPledgeModel = PledgeApplication.getPledgeModel();
     }
 
     @Nullable
@@ -59,26 +62,21 @@ public abstract class NonProfitListFragment extends Fragment {
         });
 
         // TODO(nikhilb): Add EndlessScrollListener when the server supports paging
-
-        fetchNonProfits(new JsonHttpResponseHandler() {
+        fetchNonProfits(new PledgeModel.OnResultDelegate<List<NonProfit>>() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+            public void onQueryComplete(List<NonProfit> result) {
                 aNonProfits.clear();
-                aNonProfits.addAll(NonProfit.fromJSONArray(response));
+                aNonProfits.addAll(result);
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                if (errorResponse != null) {
-                    Log.d("DEBUG", errorResponse.toString());
-
-                }
-                Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_SHORT).show();
+            public void onNetworkFailure(int errorMessage) {
+                Util.displayNetworkErrorToast(getContext());
             }
         });
 
         return v;
     }
 
-    protected abstract void fetchNonProfits(JsonHttpResponseHandler handler);
+    protected abstract void fetchNonProfits(PledgeModel.OnResultDelegate<List<NonProfit>> delegate);
 }

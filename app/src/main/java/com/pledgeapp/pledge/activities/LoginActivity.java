@@ -36,6 +36,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 import com.pledgeapp.pledge.PledgeApplication;
 import com.pledgeapp.pledge.R;
 
@@ -96,6 +97,9 @@ public class LoginActivity extends AppCompatActivity implements
 
         PledgeApplication.setGoogleApiClient(mGoogleApiClient);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        PledgeApplication.getPledgeModel().getMajorCategories();
+        PledgeApplication.getPledgeModel().getSubcategories();
     }
 
     @Override
@@ -214,8 +218,17 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     protected void onAuthGranted() {
+        registerUser();
         startActivity(MainActivity.getLaunchIntent(this));
         finish();
+    }
+
+    private void registerUser() {
+        String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+        Person person = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+        String firstName = person.getName().getGivenName();
+        String lastName = person.getName().getFamilyName();
+        PledgeApplication.getPledgeModel().createOrFindUser(email, firstName, lastName);
     }
 
     private void showLoginView() {

@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.pledgeapp.pledge.PledgeApplication;
-import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.activities.CategoryBrowseActivity;
 import com.pledgeapp.pledge.adapters.CategoriesArrayAdapter;
@@ -23,8 +21,6 @@ import java.util.ArrayList;
  * List of all the Categories
  */
 public class CategoriesSelectionListFragment extends Fragment {
-
-    protected PledgeClient mClient;
     private CategoriesArrayAdapter mCategoriesAdapter;
 
     public static CategoriesSelectionListFragment newInstance() {
@@ -42,8 +38,6 @@ public class CategoriesSelectionListFragment extends Fragment {
 
         ArrayList<NonProfit.CategoryInfo> nonProfits = new ArrayList<>();
         mCategoriesAdapter = new CategoriesArrayAdapter(getActivity(), nonProfits);
-
-        mClient = ((PledgeApplication)getActivity().getApplication()).getPledgeClient();
     }
 
     @Nullable

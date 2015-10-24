@@ -12,22 +12,17 @@ import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.ListView;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pledgeapp.pledge.EndlessScrollListener;
 import com.pledgeapp.pledge.PledgeApplication;
-import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.activities.NonProfitDetailActivity;
 import com.pledgeapp.pledge.adapters.NonProfitArrayAdapter;
 import com.pledgeapp.pledge.adapters.SearchSuggestionsArrayAdapter;
+import com.pledgeapp.pledge.helpers.PledgeModel;
 import com.pledgeapp.pledge.helpers.Util;
 import com.pledgeapp.pledge.models.NonProfit;
 import com.pledgeapp.pledge.models.RecentQueriesHelper;
 import com.pledgeapp.pledge.models.SearchSuggestion;
-
-import org.apache.http.Header;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +52,7 @@ public class SearchFragment extends Fragment {
 
     private SearchView mSearchView;
 
-    private PledgeClient mClient;
+    private PledgeModel mPledgeModel;
     // Optionally set if we are searching within a category
     private NonProfit.CategoryInfo mCategoryInfo;
 
@@ -73,7 +68,7 @@ public class SearchFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        mClient = ((PledgeApplication) getActivity().getApplication()).getPledgeClient();
+        mPledgeModel = PledgeApplication.getPledgeModel();
 
         mLvSuggestions = (ListView) view.findViewById(R.id.lvSearchSuggestions);
         mSuggestionsListAdapter = new SearchSuggestionsArrayAdapter(getActivity(),
@@ -173,17 +168,16 @@ public class SearchFragment extends Fragment {
 
     private void searchWithPageOffset(String query, int page) {
         // ProPublica 1-indexes their search results, so we need to convert to 1-indexing
-        mClient.search(query, mCategoryInfo, page + 1, new JsonHttpResponseHandler() {
+        mPledgeModel.search(query, mCategoryInfo, page + 1, new PledgeModel.OnResultDelegate<List<NonProfit>>() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                List<NonProfit> nonProfits = NonProfit.fromJSONArray(response);
+            public void onQueryComplete(List<NonProfit> nonProfits) {
                 mResultsListAdapter.addAll(nonProfits);
                 mLvSuggestions.setVisibility(View.GONE);
                 mLvResults.setVisibility(View.VISIBLE);
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+            public void onNetworkFailure(int errorMessage) {
                 Util.displayNetworkErrorToast(getContext());
             }
         });

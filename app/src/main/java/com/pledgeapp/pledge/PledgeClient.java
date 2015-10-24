@@ -1,5 +1,7 @@
 package com.pledgeapp.pledge;
 
+import android.content.Context;
+
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -21,7 +23,15 @@ public class PledgeClient {
 
     private AsyncHttpClient mClient;
 
-	public PledgeClient() {
+    private static PledgeClient sInstance;
+    public static synchronized PledgeClient getInstance() {
+        if (sInstance == null) {
+            sInstance = new PledgeClient();
+        }
+        return sInstance;
+    }
+
+	private PledgeClient() {
         // TODO(ageiduschek): Authenticate requests with Google Oauth token.
         mClient = new AsyncHttpClient();
 	}
@@ -44,10 +54,6 @@ public class PledgeClient {
         mClient.get(apiUrl, params, handler);
 	}
 
-	public void search(String query, NonProfit.CategoryInfo category, AsyncHttpResponseHandler handler) {
-		search(query, category, 1 /*page*/, handler);
-	}
-
 	public void search(String query, NonProfit.CategoryInfo category, int page, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("/search");
 
@@ -65,4 +71,28 @@ public class PledgeClient {
         return PLEDGE_SERVICE_BASE_URL + path;
     }
 
+    public void createOrFindUser(String email,
+                                 String firstName,
+                                 String lastName,
+                                 AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("/create_or_find_user");
+
+        RequestParams params = new RequestParams();
+        params.put("email", email);
+        params.put("first_name", firstName);
+        params.put("last_name", lastName);
+
+        mClient.post(apiUrl, params, handler);
+    }
+
+
+    public void getMajorCategories(AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("/major_categories");
+        mClient.get(apiUrl, handler);
+    }
+
+    public void getSubcategories(AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("/sub_categories");
+        mClient.get(apiUrl, handler);
+    }
 }
