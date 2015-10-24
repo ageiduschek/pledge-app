@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,7 @@ import android.widget.Filter;
 import android.widget.ListView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.pledgeapp.pledge.EndlessScrollListener;
 import com.pledgeapp.pledge.PledgeApplication;
 import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
@@ -50,11 +50,15 @@ public class SearchFragment extends Fragment {
 
     private SearchView mSearchView;
 
+    private PledgeClient mClient;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+
+        mClient = ((PledgeApplication) getActivity().getApplication()).getPledgeClient();
 
         mLvSuggestions = (ListView) view.findViewById(R.id.lvSearchSuggestions);
         mSuggestionsListAdapter = new SearchSuggestionsArrayAdapter(getActivity(),
@@ -81,7 +85,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 startActivity(NonProfitDetailActivity.getLaunchIntent(getContext(),
-                                                                      mResultsListAdapter.getItem(position)));
+                        mResultsListAdapter.getItem(position)));
             }
         });
 
@@ -126,34 +130,44 @@ public class SearchFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    private void doSearchQuery(String query) {
+    private void doSearchQuery(final String query) {
         RecentQueriesHelper.getInstance(getContext()).addOrUpdateQuery(query);
 
         mSearchView.setQuery(query, false /*submit query*/);
 
         if (Util.isNetworkAvailable(getContext())) {
-            PledgeClient client = ((PledgeApplication) getActivity().getApplication()).getPledgeClient();
-            client.search(query, new JsonHttpResponseHandler() {
+            mResultsListAdapter.clear();
+            mLvResults.setOnScrollListener(new EndlessScrollListener() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                    mResultsListAdapter.clear();
-                    List<NonProfit> nonProfits = NonProfit.fromJSONArray(response);
-                    mResultsListAdapter.addAll(nonProfits);
-                    mLvSuggestions.setVisibility(View.GONE);
-                    mLvResults.setVisibility(View.VISIBLE);
+                public boolean onLoadMore(int page, int totalItemCount) {
+                    searchWithPageOffset(query, page);
+                    return true;
                 }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    Util.displayNetworkErrorToast(getContext());
-                }
-
             });
+            searchWithPageOffset(query, 0);
         } else {
             Util.displayNetworkErrorToast(getContext());
         }
 
         hideSoftKeyboard(mSearchView);
+    }
+
+    private void searchWithPageOffset(String query, int page) {
+        // ProPublica 1-indexes their search results, so we need to convert to 1-indexing
+        mClient.search(query, page + 1, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                List<NonProfit> nonProfits = NonProfit.fromJSONArray(response);
+                mResultsListAdapter.addAll(nonProfits);
+                mLvSuggestions.setVisibility(View.GONE);
+                mLvResults.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Util.displayNetworkErrorToast(getContext());
+            }
+        });
     }
 
     private class SuggestionsFilter extends Filter {

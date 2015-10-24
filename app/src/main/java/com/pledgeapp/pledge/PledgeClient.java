@@ -44,7 +44,7 @@ public class PledgeClient {
 	}
 
 	public void search(String query, AsyncHttpResponseHandler handler) {
-		search(query, 0, handler);
+		search(query, 1, handler);
 	}
 
 	public void search(String query, int page, AsyncHttpResponseHandler handler) {
