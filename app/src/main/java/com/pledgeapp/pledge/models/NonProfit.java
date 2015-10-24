@@ -2,6 +2,7 @@ package com.pledgeapp.pledge.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -68,27 +70,6 @@ public class NonProfit implements Parcelable {
 
     public String getName() {
         return name;
-    }
-
-    //TODO: Actually load these from the server
-    private HashMap<String, String> mNTEECodeToName = new HashMap<>();
-    public String getCategoryName() {
-        //return mNTEECodeToName.get(nteeCode);
-        return nteeCode;
-    }
-
-    public static ArrayList<CategoryInfo> getMajorCategoryNames() {
-        ArrayList<CategoryInfo> result = new ArrayList<>();
-        result.add(new CategoryInfo(1, "Arts, Culture and Humanities"));
-        result.add(new CategoryInfo(2, "Education"));
-        result.add(new CategoryInfo(3, "Environment and Animals"));
-        result.add(new CategoryInfo(4, "Health"));
-        result.add(new CategoryInfo(5, "Human Services"));
-        result.add(new CategoryInfo(6, "International"));
-        result.add(new CategoryInfo(7, "Public, Societal Benefit"));
-        result.add(new CategoryInfo(8, "Religion"));
-        result.add(new CategoryInfo(9, "Mutual/Membership Benefit"));
-        return result;
     }
 
     public String getMissionStatement() {
@@ -164,15 +145,78 @@ public class NonProfit implements Parcelable {
         }
     };
 
+    private static ArrayList<CategoryInfo> sMajorCategoryInfo = new ArrayList<>();
+    public static void saveMajorCategoryInfoFromJSON(JSONArray response) {
+        sMajorCategoryInfo.clear();
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                JSONObject categoryJson = response.getJSONObject(i);
+                JSONArray subCategoriesJson = categoryJson.getJSONArray("subcategories");
+                ArrayList<String> subCategories = new ArrayList<>();
+                for(int j = 0; j < subCategoriesJson.length(); j++){
+                    subCategories.add(subCategoriesJson.getString(j));
+                }
+
+                sMajorCategoryInfo.add(new CategoryInfo(categoryJson.getInt("index"),
+                                                        categoryJson.getString("name"),
+                                                        subCategories));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static HashMap<String, HashMap<String, String>> sNTEECodeToName = new HashMap<>();
+    public static void saveSubCategoryInfoFromJSON(JSONObject response) {
+        sNTEECodeToName.clear();
+        Iterator<String> it = response.keys();
+        while (it.hasNext()) {
+            String subCategory = it.next();
+            sNTEECodeToName.put(subCategory, new HashMap<String, String>());
+            try {
+                JSONObject subCategoryJson = response.getJSONObject(subCategory);
+                Iterator<String> minorCategoryIt = subCategoryJson.keys();
+                while (minorCategoryIt.hasNext()) {
+                    String minorCategory = minorCategoryIt.next();
+                    sNTEECodeToName.get(subCategory).put(minorCategory, subCategoryJson.getString(minorCategory));
+                }
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public String getCategoryName() {
+        Log.d("DEBUG", "nteeCode: " + nteeCode);
+        if (nteeCode != null) {
+            String subcategory = nteeCode.substring(0, 1);
+            // Strip all non-numeric chars
+            String section = nteeCode.replaceAll("[^\\d]", "");
+            // Trim leading zeros until we're at 2 chars
+            section = section.length() > 2 ? section.replaceFirst("^0", "") : section;
+            section = section.length() > 2 ? section.replaceFirst("0$", "") : section;
+            Log.d("DEBUG", "Subcategory: " + subcategory + " section: " + section);
+            return sNTEECodeToName.get(subcategory).get(subcategory+section);
+        }
+
+        return null;
+    }
+
+
+    public static ArrayList<CategoryInfo> getMajorCategoryInfo() {
+        return sMajorCategoryInfo;
+    }
 
     // TODO: get a shorter name for each category for displaying in titles / search hint
     public static class CategoryInfo implements Parcelable {
         public int searchIndex;
         public String name;
+        public ArrayList<String> subCategories;
 
-        private CategoryInfo(int searchIndex, String name) {
+        private CategoryInfo(int searchIndex, String name, ArrayList<String> subCategories) {
             this.searchIndex = searchIndex;
             this.name = name;
+            this.subCategories = subCategories;
         }
 
         @Override
@@ -184,11 +228,13 @@ public class NonProfit implements Parcelable {
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeInt(this.searchIndex);
             dest.writeString(this.name);
+            dest.writeSerializable(this.subCategories);
         }
 
         private CategoryInfo(Parcel in) {
             this.searchIndex = in.readInt();
             this.name = in.readString();
+            this.subCategories = (ArrayList<String>) in.readSerializable();
         }
 
         public static final Creator<CategoryInfo> CREATOR = new Creator<CategoryInfo>() {

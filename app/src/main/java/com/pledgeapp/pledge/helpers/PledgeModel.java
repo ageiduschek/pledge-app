@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -82,7 +83,7 @@ public class PledgeModel {
         AsyncHttpResponseHandler handler = new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                // TODO: parse data and store
+                NonProfit.saveMajorCategoryInfoFromJSON(response);
                 mMainCategoriesLoaded = true;
                 runBlockingTasks();
             }
@@ -100,7 +101,7 @@ public class PledgeModel {
         AsyncHttpResponseHandler handler = new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                // TODO: parse data and store
+                NonProfit.saveSubCategoryInfoFromJSON(response);
                 mSubCategoriesLoaded = true;
                 runBlockingTasks();
             }
@@ -202,7 +203,7 @@ public class PledgeModel {
 
         @Override
         protected void fetchRemoteResult(JsonHttpResponseHandler httpResponseHandler) {
-            PledgeClient.getInstance().search(mQuery, mCategory, mPage + 1, httpResponseHandler);
+            PledgeClient.getInstance().search(mQuery, mCategory, mPage, httpResponseHandler);
         }
 
         @Override
@@ -243,6 +244,14 @@ public class PledgeModel {
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     int errorMessage = generalFailureResponse(errorResponse);
                     postFailure(errorMessage);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    Toast.makeText(mContext, responseString, Toast.LENGTH_LONG).show();
+                    if (responseString != null) {
+                        Log.d("ASDF", responseString);
+                    }
                 }
             });
         }

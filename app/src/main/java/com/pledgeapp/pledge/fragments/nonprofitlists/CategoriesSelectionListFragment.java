@@ -1,6 +1,5 @@
 package com.pledgeapp.pledge.fragments.nonprofitlists;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -56,7 +55,7 @@ public class CategoriesSelectionListFragment extends Fragment {
         });
 
         mCategoriesAdapter.clear();
-        mCategoriesAdapter.addAll(NonProfit.getMajorCategoryNames());
+        mCategoriesAdapter.addAll(NonProfit.getMajorCategoryInfo());
 
         return v;
     }

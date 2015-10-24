@@ -158,7 +158,7 @@ public class SearchFragment extends Fragment {
                     return true;
                 }
             });
-            searchWithPageOffset(query, 0);
+            searchWithPageOffset(query, 1);
         } else {
             Util.displayNetworkErrorToast(getContext());
         }
@@ -168,7 +168,7 @@ public class SearchFragment extends Fragment {
 
     private void searchWithPageOffset(String query, int page) {
         // ProPublica 1-indexes their search results, so we need to convert to 1-indexing
-        mPledgeModel.search(query, mCategoryInfo, page + 1, new PledgeModel.OnResultDelegate<List<NonProfit>>() {
+        mPledgeModel.search(query, mCategoryInfo, page, new PledgeModel.OnResultDelegate<List<NonProfit>>() {
             @Override
             public void onQueryComplete(List<NonProfit> nonProfits) {
                 mResultsListAdapter.addAll(nonProfits);
