@@ -11,10 +11,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.pledgeapp.pledge.PledgeApplication;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.adapters.CreditCardAdapter;
+import com.pledgeapp.pledge.helpers.PledgeModel;
+import com.pledgeapp.pledge.models.PledgeCard;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.card.payment.CardIOActivity;
 import io.card.payment.CreditCard;
@@ -28,8 +32,10 @@ public class AddPaymentFragment  extends Fragment {
     public static final int REQUEST_CODE_SCAN_CREDIT_CARD = 4;
     private AddPaymentFragmentListener mListener;
 
-    private ArrayList<CreditCard> creditCards;
+    private ArrayList<PledgeCard> creditCards;
     private CreditCardAdapter aCreditCards;
+
+    private PledgeModel mPledgeModel;
 
     public static AddPaymentFragment newInstance() {
         
@@ -44,12 +50,22 @@ public class AddPaymentFragment  extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO(nikhilb): fetch from server instead
+        mPledgeModel = PledgeApplication.getPledgeModel();
+
         creditCards = new ArrayList<>();
-
-        creditCards.add(new CreditCard("4111111111111111", 11, 11, "111", "11111"));
-
         aCreditCards = new CreditCardAdapter(getContext(), creditCards);
+        mPledgeModel.getCreditCards(new PledgeModel.OnResultDelegate<List<PledgeCard>>() {
+            @Override
+            public void onQueryComplete(List<PledgeCard> result) {
+                aCreditCards.clear();
+                aCreditCards.addAll(result);
+            }
+
+            @Override
+            public void onNetworkFailure(List<PledgeCard> results, int errorMessage) {
+
+            }
+        });
     }
 
     @Nullable
@@ -91,26 +107,8 @@ public class AddPaymentFragment  extends Fragment {
             if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
                 CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
 
-//                // Never log a raw card number. Avoid displaying it, but if necessary use getFormattedCardNumber()
-//                resultDisplayStr = "Card Number: " + scanResult.getRedactedCardNumber() + "\n";
-//
-//                // Do something with the raw number, e.g.:
-//                // myService.setCardNumber( scanResult.cardNumber );
-//
-//                if (scanResult.isExpiryValid()) {
-//                    resultDisplayStr += "Expiration Date: " + scanResult.expiryMonth + "/" + scanResult.expiryYear + "\n";
-//                }
-//
-//                if (scanResult.cvv != null) {
-//                    // Never log or display a CVV
-//                    resultDisplayStr += "CVV has " + scanResult.cvv.length() + " digits.\n";
-//                }
-//
-//                if (scanResult.postalCode != null) {
-//                    resultDisplayStr += "Postal Code: " + scanResult.postalCode + "\n";
-//                }
-
-                aCreditCards.add(scanResult);
+                // TODO(nikhilb): Post this result to the server
+//                aCreditCards.add(scanResult);
 
                 mListener.onPaymentSuccessfullyAdded();
             } else {

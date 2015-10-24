@@ -3,27 +3,19 @@ package com.pledgeapp.pledge.fragments.nonprofitlists;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pledgeapp.pledge.PledgeApplication;
-import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.activities.NonProfitDetailActivity;
 import com.pledgeapp.pledge.adapters.NonProfitArrayAdapter;
 import com.pledgeapp.pledge.helpers.PledgeModel;
 import com.pledgeapp.pledge.helpers.Util;
 import com.pledgeapp.pledge.models.NonProfit;
-
-import org.apache.http.Header;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +62,7 @@ public abstract class NonProfitListFragment extends Fragment {
             }
 
             @Override
-            public void onNetworkFailure(int errorMessage) {
+            public void onNetworkFailure(List<NonProfit> results, int errorMessage) {
                 Util.displayNetworkErrorToast(getContext());
             }
         });

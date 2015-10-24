@@ -4,17 +4,18 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.models.NonProfit;
+import com.pledgeapp.pledge.models.PledgeCard;
 import com.pledgeapp.pledge.models.User;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class PledgeModel {
          *
          * @param errorMessage String describing error
          */
-        void onNetworkFailure(int errorMessage);
+        void onNetworkFailure(T results, int errorMessage);
     }
 
     private final Handler mIOHandler;
@@ -49,6 +50,7 @@ public class PledgeModel {
     private ArrayList<Runnable> mTasksPendingCredentials;
 
     private User mUser;
+    private List<PledgeCard> mCreditCards;
 
     public PledgeModel(Context context) {
         mContext = context;
@@ -147,6 +149,10 @@ public class PledgeModel {
         postWhenBootstrapComplete(new GetLocalTask(delegate));
     }
 
+    public void getCreditCards(PledgeModel.OnResultDelegate<List<PledgeCard>> delegate) {
+        postWhenBootstrapComplete(new GetCreditCardsTask(delegate));
+    }
+
     public void search(String query, NonProfit.CategoryInfo category, OnResultDelegate<List<NonProfit>> delegate) {
         search(query, category, 1 /*page*/, delegate);
     }
@@ -158,6 +164,16 @@ public class PledgeModel {
     private class GetFeaturedTask extends GetQueryTask<List<NonProfit>> {
         public GetFeaturedTask(OnResultDelegate<List<NonProfit>> delegate) {
             super(delegate);
+        }
+
+        @Override
+        protected List<NonProfit> getLocalResult() {
+            return null;
+        }
+
+        @Override
+        protected boolean shouldSkipRemoteQuery(List<NonProfit> localResult) {
+            return false;
         }
 
         @Override
@@ -177,6 +193,16 @@ public class PledgeModel {
         }
 
         @Override
+        protected List<NonProfit> getLocalResult() {
+            return null;
+        }
+
+        @Override
+        protected boolean shouldSkipRemoteQuery(List<NonProfit> localResult) {
+            return false;
+        }
+
+        @Override
         protected void fetchRemoteResult(JsonHttpResponseHandler httpResponseHandler) {
             PledgeClient.getInstance().getLocal(httpResponseHandler);
         }
@@ -184,6 +210,43 @@ public class PledgeModel {
         @Override
         protected List<NonProfit> parseRemoteResult(Context context, JSONArray resultJSON) {
             return NonProfit.fromJSONArray(resultJSON);
+        }
+    }
+
+    private class GetCreditCardsTask extends GetQueryTask<List<PledgeCard>> {
+
+        public GetCreditCardsTask(OnResultDelegate<List<PledgeCard>> delegate) {
+            super(delegate);
+        }
+
+        @Override
+        protected List<PledgeCard> getLocalResult() {
+            return mCreditCards;
+        }
+
+        @Override
+        protected boolean shouldSkipRemoteQuery(List<PledgeCard> localResult) {
+            return mCreditCards != null;
+        }
+
+        @Override
+        protected void fetchRemoteResult(JsonHttpResponseHandler httpResponseHandler) {
+            PledgeClient.getInstance().getCreditCards(mUser.getUserId(), httpResponseHandler);
+        }
+
+        @Override
+        protected List<PledgeCard> parseRemoteResult(Context context, JSONArray resultJSON) {
+            ArrayList<PledgeCard> creditCards = new ArrayList<>();
+
+            for (int i = 0; i < resultJSON.length(); i++) {
+                try {
+                    creditCards.add(PledgeCard.fromJson(resultJSON.getJSONObject(i)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return creditCards;
         }
     }
 
@@ -204,6 +267,16 @@ public class PledgeModel {
         }
 
         @Override
+        protected List<NonProfit> getLocalResult() {
+            return null;
+        }
+
+        @Override
+        protected boolean shouldSkipRemoteQuery(List<NonProfit> localResult) {
+            return false;
+        }
+
+        @Override
         protected void fetchRemoteResult(JsonHttpResponseHandler httpResponseHandler) {
             PledgeClient.getInstance().search(mQuery, mCategory, mPage, httpResponseHandler);
         }
@@ -215,6 +288,8 @@ public class PledgeModel {
     }
 
     private abstract class GetQueryTask<T> implements Runnable {
+        protected abstract T getLocalResult();
+        protected abstract boolean shouldSkipRemoteQuery(T localResult);
         protected abstract void fetchRemoteResult(JsonHttpResponseHandler httpResponseHandler);
         protected abstract T parseRemoteResult(Context context, JSONArray resultJSON);
 
@@ -230,9 +305,15 @@ public class PledgeModel {
         }
 
         public void run() {
+            final T localResults = getLocalResult();
+
             boolean isNetworkAvailable = Util.isNetworkAvailable(mContext);
-            if (!isNetworkAvailable ) {
-                postFailure(R.string.network_error);
+            if (!isNetworkAvailable || shouldSkipRemoteQuery(localResults)) {
+                if (!isNetworkAvailable && !shouldSkipRemoteQuery(localResults)){
+                    postFailure(localResults, R.string.network_error);
+                } else {
+                    postSuccess(localResults);
+                }
                 return;
             }
 
@@ -245,15 +326,7 @@ public class PledgeModel {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     int errorMessage = generalFailureResponse(errorResponse);
-                    postFailure(errorMessage);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    Toast.makeText(mContext, responseString, Toast.LENGTH_LONG).show();
-                    if (responseString != null) {
-                        Log.d("ASDF", responseString);
-                    }
+                    postFailure(localResults, errorMessage);
                 }
             });
         }
@@ -267,11 +340,11 @@ public class PledgeModel {
             });
         }
 
-        private void postFailure(final int errorMessage) {
+        private void postFailure(final T result, final int errorMessage) {
             mResponseHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mDelegate.onNetworkFailure(errorMessage);
+                    mDelegate.onNetworkFailure(result, errorMessage);
                 }
             });
         }

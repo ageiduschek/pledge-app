@@ -177,7 +177,7 @@ public class SearchFragment extends Fragment {
             }
 
             @Override
-            public void onNetworkFailure(int errorMessage) {
+            public void onNetworkFailure(List<NonProfit> results, int errorMessage) {
                 Util.displayNetworkErrorToast(getContext());
             }
         });

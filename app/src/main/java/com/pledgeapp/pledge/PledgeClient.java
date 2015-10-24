@@ -52,6 +52,15 @@ public class PledgeClient {
         mClient.get(apiUrl, params, handler);
 	}
 
+    public void getCreditCards(String userId, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("/fetch_credit_cards");
+
+        RequestParams params = new RequestParams();
+        params.put("user_id", userId);
+
+        mClient.get(apiUrl, params, handler);
+    }
+
 	public void search(String query, NonProfit.CategoryInfo category, int page, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("/search");
 

@@ -9,10 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pledgeapp.pledge.R;
+import com.pledgeapp.pledge.models.PledgeCard;
 
 import java.util.List;
 
-import io.card.payment.CreditCard;
+import io.card.payment.CardType;
 
 /**
  * Created by nikhil on 10/18/15.
@@ -25,10 +26,10 @@ public class CreditCardAdapter extends BaseAdapter {
         ImageView ivCardType;
     }
 
-    private List<CreditCard> creditCardList;
+    private List<PledgeCard> creditCardList;
     private Context mContext;
 
-    public CreditCardAdapter(Context context, List<CreditCard> objects) {
+    public CreditCardAdapter(Context context, List<PledgeCard> objects) {
         mContext = context;
         creditCardList = objects;
     }
@@ -63,7 +64,7 @@ public class CreditCardAdapter extends BaseAdapter {
             }
         } else {
             // This is the credit card view
-            CreditCard card = (CreditCard) getItem(position);
+            PledgeCard card = (PledgeCard) getItem(position);
 
             CreditCardViewHolder viewHolder;
             if (convertView != null) {
@@ -78,13 +79,23 @@ public class CreditCardAdapter extends BaseAdapter {
                 convertView.setTag(viewHolder);
             }
 
-            viewHolder.tvCreditCardNumber.setText(card.getRedactedCardNumber());
+            viewHolder.tvCreditCardNumber.setText("**** **** **** " + card.getCardSuffix());
 
-            String expirationDate = card.expiryMonth + "/" + card.expiryYear;
+            String expirationDate = card.getExpiryMonth() + "/" + card.getExpiryYear();
             viewHolder.tvExpirationDate.setText(expirationDate);
 
             viewHolder.ivCardType.setImageResource(android.R.color.transparent);
-            viewHolder.ivCardType.setImageBitmap(card.getCardType().imageBitmap(getContext()));
+
+            String cardType = card.getType();
+            if (cardType.equals("Visa")) {
+                viewHolder.ivCardType.setImageBitmap(CardType.VISA.imageBitmap(getContext()));
+            } else if (card.getType().equals("Mastercard")) {
+                viewHolder.ivCardType.setImageBitmap(CardType.MASTERCARD.imageBitmap(getContext()));
+            } else if (card.getType().equals("Amex")) {
+                viewHolder.ivCardType.setImageBitmap(CardType.AMEX.imageBitmap(getContext()));
+            } else {
+                viewHolder.ivCardType.setImageBitmap(CardType.UNKNOWN.imageBitmap(getContext()));
+            }
         }
 
         return convertView;
@@ -104,9 +115,13 @@ public class CreditCardAdapter extends BaseAdapter {
         return mContext;
     }
 
-    public boolean add(CreditCard creditCard) {
-        boolean addResult = creditCardList.add(creditCard);
+    public void addAll(List<PledgeCard> result) {
+        creditCardList.addAll(result);
         notifyDataSetChanged();
-        return addResult;
+    }
+
+    public void clear() {
+        creditCardList.clear();
+        notifyDataSetChanged();
     }
 }
