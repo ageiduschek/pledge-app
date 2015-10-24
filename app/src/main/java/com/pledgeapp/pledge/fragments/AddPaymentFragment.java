@@ -11,11 +11,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.pledgeapp.pledge.PledgeApplication;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.adapters.CreditCardAdapter;
 import com.pledgeapp.pledge.helpers.PledgeModel;
 import com.pledgeapp.pledge.models.PledgeCard;
+
+import org.apache.http.Header;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +57,11 @@ public class AddPaymentFragment  extends Fragment {
 
         creditCards = new ArrayList<>();
         aCreditCards = new CreditCardAdapter(getContext(), creditCards);
-        mPledgeModel.getCreditCards(new PledgeModel.OnResultDelegate<List<PledgeCard>>() {
+        fetchCreditCards(false);
+    }
+
+    private void fetchCreditCards(boolean forceFetchFromServer) {
+        mPledgeModel.getCreditCards(forceFetchFromServer, new PledgeModel.OnResultDelegate<List<PledgeCard>>() {
             @Override
             public void onQueryComplete(List<PledgeCard> result) {
                 aCreditCards.clear();
@@ -105,12 +112,7 @@ public class AddPaymentFragment  extends Fragment {
         if (requestCode == REQUEST_CODE_SCAN_CREDIT_CARD) {
             String resultDisplayStr;
             if (data != null && data.hasExtra(CardIOActivity.EXTRA_SCAN_RESULT)) {
-                CreditCard scanResult = data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT);
-
-                // TODO(nikhilb): Post this result to the server
-//                aCreditCards.add(scanResult);
-
-                mListener.onPaymentSuccessfullyAdded();
+                addCreditCard((CreditCard) data.getParcelableExtra(CardIOActivity.EXTRA_SCAN_RESULT));
             } else {
                 resultDisplayStr = "Scan was canceled.";
             }
@@ -118,6 +120,22 @@ public class AddPaymentFragment  extends Fragment {
             // resultTextView.setText(resultStr);
         }
         // else handle other activity results
+    }
+
+    private void addCreditCard(CreditCard scanResult) {
+        mPledgeModel.addCreditCard(scanResult, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                // Force server fetch since we just added a new credit card
+                fetchCreditCards(true);
+                mListener.onPaymentSuccessfullyAdded();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+            }
+        });
     }
 
     @Override

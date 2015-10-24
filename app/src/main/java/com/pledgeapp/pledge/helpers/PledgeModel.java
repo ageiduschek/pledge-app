@@ -21,6 +21,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.card.payment.CreditCard;
+
 /**
  * Created by ageiduschek on 10/23/15.
  */
@@ -81,6 +83,10 @@ public class PledgeModel {
         };
 
         PledgeClient.getInstance().createOrFindUser(email, firstName, lastName, handler);
+    }
+
+    public void addCreditCard(CreditCard creditCard, AsyncHttpResponseHandler handler) {
+        PledgeClient.getInstance().addCreditCard(mUser.getEmail(), creditCard, handler);
     }
 
     public void getMajorCategories() {
@@ -149,8 +155,8 @@ public class PledgeModel {
         postWhenBootstrapComplete(new GetLocalTask(delegate));
     }
 
-    public void getCreditCards(PledgeModel.OnResultDelegate<List<PledgeCard>> delegate) {
-        postWhenBootstrapComplete(new GetCreditCardsTask(delegate));
+    public void getCreditCards(boolean forceServerFetch, PledgeModel.OnResultDelegate<List<PledgeCard>> delegate) {
+        postWhenBootstrapComplete(new GetCreditCardsTask(forceServerFetch, delegate));
     }
 
     public void search(String query, NonProfit.CategoryInfo category, OnResultDelegate<List<NonProfit>> delegate) {
@@ -214,9 +220,11 @@ public class PledgeModel {
     }
 
     private class GetCreditCardsTask extends GetQueryTask<List<PledgeCard>> {
+        private boolean mForceFetchFromServer;
 
-        public GetCreditCardsTask(OnResultDelegate<List<PledgeCard>> delegate) {
+        public GetCreditCardsTask(boolean forceFetchFromServer, OnResultDelegate<List<PledgeCard>> delegate) {
             super(delegate);
+            mForceFetchFromServer = forceFetchFromServer;
         }
 
         @Override
@@ -226,7 +234,7 @@ public class PledgeModel {
 
         @Override
         protected boolean shouldSkipRemoteQuery(List<PledgeCard> localResult) {
-            return mCreditCards != null;
+            return !mForceFetchFromServer && mCreditCards != null;
         }
 
         @Override

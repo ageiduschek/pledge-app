@@ -5,6 +5,9 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.pledgeapp.pledge.models.NonProfit;
 
+import io.card.payment.CardType;
+import io.card.payment.CreditCard;
+
 /*
  * 
  * This is the object responsible for communicating with a REST API. 
@@ -59,6 +62,28 @@ public class PledgeClient {
         params.put("user_id", userId);
 
         mClient.get(apiUrl, params, handler);
+    }
+
+    public void addCreditCard(String email, CreditCard creditCard, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("/store_credit_card");
+
+        RequestParams params = new RequestParams();
+        params.put("email", email);
+        params.put("cc_number", creditCard.cardNumber);
+        params.put("cvv", creditCard.cvv);
+        params.put("expiry_year", creditCard.expiryYear);
+        params.put("expiry_month", creditCard.expiryMonth);
+        String cardType = "Unknown";
+        if (creditCard.getCardType() == CardType.AMEX) {
+            cardType = "Amex";
+        } else if (creditCard.getCardType() == CardType.VISA) {
+            cardType = "Visa";
+        } else if (creditCard.getCardType() == CardType.MASTERCARD) {
+            cardType = "Mastercard";
+        }
+        params.put("card_type", cardType);
+
+        mClient.post(apiUrl, params, handler);
     }
 
 	public void search(String query, NonProfit.CategoryInfo category, int page, AsyncHttpResponseHandler handler) {
