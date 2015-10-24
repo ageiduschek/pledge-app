@@ -3,6 +3,7 @@ package com.pledgeapp.pledge;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.pledgeapp.pledge.models.NonProfit;
 
 /*
  * 
@@ -43,15 +44,18 @@ public class PledgeClient {
         mClient.get(apiUrl, params, handler);
 	}
 
-	public void search(String query, AsyncHttpResponseHandler handler) {
-		search(query, 1, handler);
+	public void search(String query, NonProfit.CategoryInfo category, AsyncHttpResponseHandler handler) {
+		search(query, category, 1 /*page*/, handler);
 	}
 
-	public void search(String query, int page, AsyncHttpResponseHandler handler) {
+	public void search(String query, NonProfit.CategoryInfo category, int page, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("/search");
 
         RequestParams params = new RequestParams();
         params.put("q", query);
+		if (category != null) {
+			params.put("category", category.searchIndex);
+		}
         params.put("page", page);
 
         mClient.get(apiUrl, params, handler);

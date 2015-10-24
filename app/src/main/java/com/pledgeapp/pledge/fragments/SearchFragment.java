@@ -33,6 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
+    private static final String KEY_CATEGORY_INFO = "key_category_info";
+
+    public static Bundle getNewInstanceArgs(NonProfit.CategoryInfo categoryInfo) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(KEY_CATEGORY_INFO, categoryInfo);
+        return bundle;
+    }
 
     public static SearchFragment newInstance() {
         
@@ -51,6 +58,14 @@ public class SearchFragment extends Fragment {
     private SearchView mSearchView;
 
     private PledgeClient mClient;
+    // Optionally set if we are searching within a category
+    private NonProfit.CategoryInfo mCategoryInfo;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mCategoryInfo = getArguments().getParcelable(KEY_CATEGORY_INFO);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -91,6 +106,10 @@ public class SearchFragment extends Fragment {
 
         mLvSuggestions.setVisibility(View.VISIBLE);
         mLvResults.setVisibility(View.GONE);
+
+        if (mCategoryInfo != null) {
+            mSearchView.setQueryHint("Search " + mCategoryInfo.name);
+        }
         return view;
     }
 
@@ -154,7 +173,7 @@ public class SearchFragment extends Fragment {
 
     private void searchWithPageOffset(String query, int page) {
         // ProPublica 1-indexes their search results, so we need to convert to 1-indexing
-        mClient.search(query, page + 1, new JsonHttpResponseHandler() {
+        mClient.search(query, mCategoryInfo, page + 1, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 List<NonProfit> nonProfits = NonProfit.fromJSONArray(response);

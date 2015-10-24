@@ -164,13 +164,41 @@ public class NonProfit implements Parcelable {
         }
     };
 
-    public static class CategoryInfo {
+
+    // TODO: get a shorter name for each category for displaying in titles / search hint
+    public static class CategoryInfo implements Parcelable {
         public int searchIndex;
         public String name;
 
-        public CategoryInfo(int searchIndex, String name) {
+        private CategoryInfo(int searchIndex, String name) {
             this.searchIndex = searchIndex;
             this.name = name;
         }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(this.searchIndex);
+            dest.writeString(this.name);
+        }
+
+        private CategoryInfo(Parcel in) {
+            this.searchIndex = in.readInt();
+            this.name = in.readString();
+        }
+
+        public static final Creator<CategoryInfo> CREATOR = new Creator<CategoryInfo>() {
+            public CategoryInfo createFromParcel(Parcel source) {
+                return new CategoryInfo(source);
+            }
+
+            public CategoryInfo[] newArray(int size) {
+                return new CategoryInfo[size];
+            }
+        };
     }
 }

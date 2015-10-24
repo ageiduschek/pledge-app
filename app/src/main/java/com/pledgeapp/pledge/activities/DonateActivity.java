@@ -31,7 +31,7 @@ public class DonateActivity extends AppCompatActivity implements AddPaymentFragm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_donate);
+        setContentView(R.layout.activity_no_nav);
 
 
         if (savedInstanceState == null) {
