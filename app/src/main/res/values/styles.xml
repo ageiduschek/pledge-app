@@ -19,7 +19,6 @@
         <item name="android:windowTranslucentStatus">true</item>
 
         <item name="android:textViewStyle">@style/PledgeBaseTextView</item>
-        <item name="cardStyle">@style/PledgeCardView</item>
     </style>
 
     <style name="PledgeBaseTextView" parent="android:Widget.TextView">
@@ -27,7 +26,6 @@
         <item name="android:linksClickable">true</item>
     </style>
 
-    <attr name="cardStyle"/>
     <style name="PledgeCardView" parent="CardView.Light">
         <item name="android:layout_margin">@dimen/card_view_margin</item>
     </style>
@@ -42,7 +40,6 @@
     <style name="ContentContainer" parent="Base.TextAppearance.AppCompat.Medium">
         <item name="android:padding">@dimen/content_padding</item>
     </style>
-
     <dimen name="card_view_margin">5dp</dimen>
     <dimen name="content_padding">10dp</dimen>
     <dimen name="title_padding_bottom">5dp</dimen>

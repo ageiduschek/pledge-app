@@ -9,8 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:id="@+id/tabStrip"
+        android:background="?colorPrimary"
         app:pstsShouldExpand="true"
-        />
+        app:pstsIndicatorColor="@android:color/white"
+    />
     <android.support.v4.view.ViewPager
         android:layout_height="wrap_content"
         android:layout_width="match_parent"

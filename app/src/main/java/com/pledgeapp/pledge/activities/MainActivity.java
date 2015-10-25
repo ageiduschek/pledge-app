@@ -32,7 +32,8 @@ import com.pledgeapp.pledge.models.NonProfit;
 
 import java.util.ArrayList;
 
-public class MainActivity extends BaseActivity implements AddPaymentFragment.AddPaymentFragmentListener {
+public class MainActivity extends BaseActivity implements AddPaymentFragment.AddPaymentFragmentListener,
+        BrowseFragment.OnPageChangedListener {
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
@@ -224,5 +225,12 @@ public class MainActivity extends BaseActivity implements AddPaymentFragment.Add
     @Override
     protected ArrayList<Class<? extends Fragment>> getFragmentClassesForContainer() {
         return mFragmentClasses;
+    }
+
+    @Override
+    public void onPageChanged(String currentTitle) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(currentTitle);
+        }
     }
 }

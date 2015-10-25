@@ -1,5 +1,6 @@
 package com.pledgeapp.pledge.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import com.pledgeapp.pledge.R;
 
 public class BrowseFragment extends Fragment {
     private PagerAdapter mPagerAdapter;
+    private OnPageChangedListener mListener;
 
     public static BrowseFragment newInstance() {
         
@@ -35,9 +37,47 @@ public class BrowseFragment extends Fragment {
             mPagerAdapter = new BrowsePagerAdapter(getChildFragmentManager());
         }
         vpPager.setAdapter(mPagerAdapter);
+
+        vpPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mListener.onPageChanged(mPagerAdapter.getPageTitle(position).toString());
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
         PagerSlidingTabStrip tabStrip = (PagerSlidingTabStrip) thisView.findViewById(R.id.tabStrip);
         tabStrip.setViewPager(vpPager);
+        mListener.onPageChanged(mPagerAdapter.getPageTitle(vpPager.getCurrentItem()).toString());
 
         return thisView;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnPageChangedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                                                 + " must implement OnPaymentMethodSubmittedListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnPageChangedListener {
+        void onPageChanged(String currentTitle);
     }
 }

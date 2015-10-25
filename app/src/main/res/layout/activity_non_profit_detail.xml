@@ -135,14 +135,9 @@
             android:layout_height="match_parent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginStart="30dp"
-            app:expandedTitleMarginEnd="30dp"
+            app:collapsedTitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:fitsSystemWindows="true">
-
-            <!--android:fitsSystemWindows="true"-->
-            <!--app:collapsedTitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"-->
-            <!--app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"-->
-            <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
 
             <include
                 layout="@layout/toolbar"
