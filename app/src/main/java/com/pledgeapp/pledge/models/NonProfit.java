@@ -207,6 +207,10 @@ public class NonProfit implements Parcelable {
         return sMajorCategoryInfo;
     }
 
+    public String getFormattedAddress() {
+        return address + "\n" + city + ", " + state;
+    }
+
     // TODO: get a shorter name for each category for displaying in titles / search hint
     public static class CategoryInfo implements Parcelable {
         public int searchIndex;

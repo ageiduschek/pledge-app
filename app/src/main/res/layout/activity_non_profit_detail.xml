@@ -9,6 +9,7 @@
         android:id="@+id/nsvNonProfitInfoContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <LinearLayout
             android:layout_width="match_parent"
@@ -17,74 +18,106 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp">
+                style="@style/PledgeCardView">
                 <!-- Main Content View -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    style="@style/ContentContainer">
                     <TextView
                         android:id="@+id/tvMissionStatementTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
+                        style="@style/ContentTitleStyle"
                         android:text="@string/mission_statement_title"/>
                     <TextView
                         android:id="@+id/tvMissionStatement"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        style="@style/ContentTextStyle"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp">
+                style="@style/PledgeCardView">
                 <!-- Main Content View -->
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    style="@style/ContentContainer">
                     <TextView
                         android:id="@+id/tvBasicInfoTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentEnd="true"
+                        style="@style/ContentTitleStyle"
+                        android:text="@string/basic_information_title"/>
+                    <TextView
+                        android:id="@+id/tvAddressTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:text="@string/basic_information_title"/>
+                        style="@style/ContentTextStyle"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/tvBasicInfoTitle"
+                        android:text="@string/address_label"/>
                     <TextView
                         android:id="@+id/tvAddress"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        style="@style/ContentTextStyle"
+                        android:layout_marginLeft="5dp"
+                        android:layout_alignTop="@+id/tvAddressTitle"
+                        android:layout_toEndOf="@+id/tvAddressTitle"/>
+
                     <TextView
-                        android:id="@+id/tvCity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        android:id="@+id/tvState"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        android:id="@+id/tvGuideStarUrlTitle"
+                        android:id="@+id/tvCategoryTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/guidestar_url"/>
-                    <TextView
-                        android:id="@+id/tvGuideStarUrl"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        android:id="@+id/tvWebsiteTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/website"/>
-                    <TextView
-                        android:id="@+id/tvWebsite"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        style="@style/ContentTextStyle"
+                        android:layout_alignParentStart="true"
+                        android:layout_below="@id/tvAddress"
+                        android:text="@string/category_title"/>
                     <TextView
                         android:id="@+id/tvCategory"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        style="@style/ContentTextStyle"
+                        android:layout_marginLeft="5dp"
+                        android:layout_alignTop="@+id/tvCategoryTitle"
+                        android:layout_toEndOf="@+id/tvCategoryTitle"/>
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cvGuideStarLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/PledgeCardView">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:background="@drawable/pressable"
+                    style="@style/ContentContainer">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        style="@style/ContentTextStyle"
+                        android:text="@string/view_more_in"/>
+                    <ImageView
+                        android:id="@+id/ivGuideStarLogo"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:scaleType="fitXY"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/guidestar_logo"
+                        android:layout_marginStart="50dp"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
         </LinearLayout>

@@ -29,7 +29,7 @@
     <string name="title_activity_non_profit_detail">NonProfitDetailActivity</string>
     <string name="mission_statement_title">Mission Statement</string>
     <string name="basic_information_title">Basic Information</string>
-    <string name="guidestar_url">GuideStart URL</string>
+    <string name="view_more_in">View more info in</string>
     <string name="website">Website</string>
     <string name="title_activity_choose_amount">ChooseAmountActivity</string>
     <string name="add_credit_card">Add Credit Card</string>
@@ -37,5 +37,7 @@
     <string name="enter_amount_plea">Enter amount to donate to</string>
     <string name="submit_donation">Submit Donation</string>
     <string name="background_image">background image</string>
+    <string name="address_label">Address:</string>
+    <string name="category_title">Category:</string>
 
 </resources>

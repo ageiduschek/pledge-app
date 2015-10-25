@@ -3,11 +3,14 @@ package com.pledgeapp.pledge.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -56,24 +59,28 @@ public class NonProfitDetailActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
-    private void fillViewWithData(NonProfit nonProfit) {
+    private void fillViewWithData(final NonProfit nonProfit) {
         TextView tvMissionStatement = (TextView) findViewById(R.id.tvMissionStatement);
         tvMissionStatement.setText(nonProfit.getMissionStatement());
 
+        String formattedAddress = nonProfit.getFormattedAddress();
         TextView tvAddress = (TextView) findViewById(R.id.tvAddress);
-        tvAddress.setText(nonProfit.getAddress());
+        tvAddress.setText(formattedAddress);
 
-        TextView tvCity = (TextView) findViewById(R.id.tvCity);
-        tvCity.setText(nonProfit.getCity());
+        CardView cvGuidestarLink = (CardView) findViewById(R.id.cvGuideStarLink);
 
-        TextView tvState = (TextView) findViewById(R.id.tvState);
-        tvState.setText(nonProfit.getState());
-
-        TextView tvWebsite = (TextView) findViewById(R.id.tvWebsite);
-        tvWebsite.setText(nonProfit.getWebsiteUrl());
-
-        TextView tvGuideStarUrl = (TextView) findViewById(R.id.tvGuideStarUrl);
-        tvGuideStarUrl.setText(nonProfit.getGuideStarUrl());
+        if (!TextUtils.isEmpty(nonProfit.getGuideStarUrl())) {
+            cvGuidestarLink.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Uri uri = Uri.parse(nonProfit.getGuideStarUrl()); // missing 'http://' will cause crashed
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }
+            });
+        } else {
+            cvGuidestarLink.setVisibility(View.GONE);
+        }
 
         TextView tvCategory = (TextView) findViewById(R.id.tvCategory);
         tvCategory.setText(nonProfit.getCategoryName());
