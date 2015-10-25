@@ -98,6 +98,15 @@ public class PledgeClient {
         mClient.post(apiUrl, params, handler);
     }
 
+    public void getDonationHistory(String userId, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("/fetch_donation_history");
+
+        RequestParams params = new RequestParams();
+        params.put("user_id", userId);
+
+        mClient.get(apiUrl, params, handler);
+    }
+
 	public void search(String query, NonProfit.CategoryInfo category, int page, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("/search");
 

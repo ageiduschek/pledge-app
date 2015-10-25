@@ -35,7 +35,7 @@ public class AddPaymentFragment  extends Fragment {
     public static final int REQUEST_CODE_SCAN_CREDIT_CARD = 4;
     private AddPaymentFragmentListener mListener;
 
-    private ArrayList<PledgeCard> creditCards;
+    private List<PledgeCard> creditCards;
     private CreditCardAdapter aCreditCards;
 
     private PledgeModel mPledgeModel;

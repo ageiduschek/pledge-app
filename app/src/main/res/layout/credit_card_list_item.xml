@@ -19,24 +19,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:text="**** **** **** 1111z"
         android:id="@+id/tvCreditCardNumber"
         android:layout_toRightOf="@+id/ivCardType"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/tvExpirationDate"
-        android:layout_margin="10dp"
+        android:layout_margin="@dimen/default_margin"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvExpirationDate"
-        android:text="09/18"
         android:gravity="center_vertical"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
+        android:layout_marginTop="@dimen/default_margin"
         android:layout_alignBottom="@+id/tvCreditCardNumber" />
 </RelativeLayout>

@@ -9,6 +9,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pledgeapp.pledge.PledgeClient;
 import com.pledgeapp.pledge.R;
+import com.pledgeapp.pledge.models.Donation;
 import com.pledgeapp.pledge.models.NonProfit;
 import com.pledgeapp.pledge.models.PledgeCard;
 import com.pledgeapp.pledge.models.User;
@@ -164,6 +165,10 @@ public class PledgeModel {
         postWhenBootstrapComplete(new GetCreditCardsTask(forceServerFetch, delegate));
     }
 
+    public void getDonationHistory(PledgeModel.OnResultDelegate<List<Donation>> delegate) {
+        postWhenBootstrapComplete(new GetDonationHistoryTask(delegate));
+    }
+
     public void search(String query, NonProfit.CategoryInfo category, OnResultDelegate<List<NonProfit>> delegate) {
         search(query, category, 1 /*page*/, delegate);
     }
@@ -262,6 +267,33 @@ public class PledgeModel {
             mCreditCards = creditCards;
 
             return creditCards;
+        }
+    }
+
+    private class GetDonationHistoryTask extends GetQueryTask<List<Donation>> {
+
+        public GetDonationHistoryTask(OnResultDelegate<List<Donation>> delegate) {
+            super(delegate);
+        }
+
+        @Override
+        protected List<Donation> getLocalResult() {
+            return null;
+        }
+
+        @Override
+        protected boolean shouldSkipRemoteQuery(List<Donation> localResult) {
+            return false;
+        }
+
+        @Override
+        protected void fetchRemoteResult(JsonHttpResponseHandler handler) {
+            PledgeClient.getInstance().getDonationHistory(mUser.getUserId(), handler);
+        }
+
+        @Override
+        protected List<Donation> parseRemoteResult(Context context, JSONArray resultJSON) {
+            return Donation.fromJsonArray(resultJSON);
         }
     }
 
