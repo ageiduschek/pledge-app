@@ -15,8 +15,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.pledgeapp.pledge.PledgeApplication;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.models.NonProfit;
+
+import org.apache.http.Header;
+import org.json.JSONObject;
 
 import java.text.NumberFormat;
 
@@ -51,7 +56,7 @@ public class EnterDonationAmountFragment extends Fragment {
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
 
-        NonProfit nonProfit = getArguments().getParcelable(KEY_NON_PROFIT);
+        final NonProfit nonProfit = getArguments().getParcelable(KEY_NON_PROFIT);
         if (nonProfit == null) {
             throw new RuntimeException("Must pass nonprofit to this fragment");
         }
@@ -62,9 +67,20 @@ public class EnterDonationAmountFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 btnSubmitDonation.setEnabled(false);
-                Double donationAmount = getDollarValue(etDonationAmount.getText().toString());
-                Toast.makeText(getContext(), "You donated $" + donationAmount + "!", Toast.LENGTH_SHORT).show();
-                mListener.onDonationSuccess();
+                final Double donationAmount = getDollarValue(etDonationAmount.getText().toString());
+
+                PledgeApplication.getPledgeModel().donate(donationAmount, nonProfit, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Toast.makeText(getContext(), "You donated $" + donationAmount + "!", Toast.LENGTH_SHORT).show();
+                        mListener.onDonationSuccess();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        super.onFailure(statusCode, headers, responseString, throwable);
+                    }
+                });
             }
         });
         btnSubmitDonation.setEnabled(false);

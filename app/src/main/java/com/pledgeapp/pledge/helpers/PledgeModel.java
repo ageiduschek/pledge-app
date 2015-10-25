@@ -89,6 +89,11 @@ public class PledgeModel {
         PledgeClient.getInstance().addCreditCard(mUser.getEmail(), creditCard, handler);
     }
 
+    public void donate(double amount, NonProfit nonProfit, AsyncHttpResponseHandler handler) {
+        String cardId = mCreditCards.isEmpty() ? "" : mCreditCards.get(0).getId();
+        PledgeClient.getInstance().donate(mUser.getUserId(), cardId, amount, nonProfit, handler);
+    }
+
     public void getMajorCategories() {
         AsyncHttpResponseHandler handler = new JsonHttpResponseHandler() {
             @Override

@@ -10,10 +10,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.pledgeapp.pledge.PledgeApplication;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.fragments.AddPaymentFragment;
 import com.pledgeapp.pledge.fragments.EnterDonationAmountFragment;
+import com.pledgeapp.pledge.helpers.PledgeModel;
+import com.pledgeapp.pledge.helpers.Util;
 import com.pledgeapp.pledge.models.NonProfit;
+import com.pledgeapp.pledge.models.PledgeCard;
+
+import java.util.List;
 
 public class DonateActivity extends AppCompatActivity implements AddPaymentFragment.AddPaymentFragmentListener,
                                                                  EnterDonationAmountFragment.onDonationSuccessListener {
@@ -37,24 +43,34 @@ public class DonateActivity extends AppCompatActivity implements AddPaymentFragm
 
         if (savedInstanceState == null) {
             mNonProfit = getIntent().getParcelableExtra(KEY_NON_PROFIT);
-            boolean userHasEnteredCreditCardInfo = false; // TODO: change to actually check
-            Fragment fragment;
-            if (userHasEnteredCreditCardInfo) {
-                NonProfit nonProfit = getIntent().getParcelableExtra(KEY_NON_PROFIT);
-                fragment = EnterDonationAmountFragment.newInstance(nonProfit);
-            } else {
-                mAddPaymentFragment = AddPaymentFragment.newInstance();
-                fragment = mAddPaymentFragment;
-            }
 
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            }
+            PledgeApplication.getPledgeModel().getCreditCards(false, new PledgeModel.OnResultDelegate<List<PledgeCard>>() {
+                @Override
+                public void onQueryComplete(List<PledgeCard> result) {
+                    Fragment fragment;
+                    if (!result.isEmpty()) {
+                        NonProfit nonProfit = getIntent().getParcelableExtra(KEY_NON_PROFIT);
+                        fragment = EnterDonationAmountFragment.newInstance(nonProfit);
+                    } else {
+                        mAddPaymentFragment = AddPaymentFragment.newInstance();
+                        fragment = mAddPaymentFragment;
+                    }
 
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flFragmentContainer, fragment).commit();
+                    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                    setSupportActionBar(toolbar);
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    }
+
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.flFragmentContainer, fragment).commit();
+                }
+
+                @Override
+                public void onNetworkFailure(List<PledgeCard> results, int errorMessage) {
+                    Util.displayNetworkErrorToast(DonateActivity.this);
+                }
+            });
         }
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

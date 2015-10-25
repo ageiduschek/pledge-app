@@ -86,6 +86,18 @@ public class PledgeClient {
         mClient.post(apiUrl, params, handler);
     }
 
+    public void donate(String userId, String cardId, double amount, NonProfit nonProfit, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("/donate");
+
+        RequestParams params = new RequestParams();
+        params.put("user_id", userId);
+        params.put("card_id", cardId);
+        params.put("amount", amount);
+        params.put("ein", nonProfit.getEin());
+
+        mClient.post(apiUrl, params, handler);
+    }
+
 	public void search(String query, NonProfit.CategoryInfo category, int page, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("/search");
 
