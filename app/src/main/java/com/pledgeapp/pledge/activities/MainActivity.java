@@ -154,7 +154,7 @@ public class MainActivity extends BaseActivity implements AddPaymentFragment.Add
         // Highlight the selected item, update the title, and close the drawer
         MenuItem menuItem = mNvDrawer.getMenu().findItem(menuItemId);
         menuItem.setChecked(true);
-        setTitle(menuItem.getTitle());
+        getSupportActionBar().setTitle(menuItem.getTitle());
         mDrawerLayout.closeDrawers();
 
         if (mSearchMenuItem != null) {
