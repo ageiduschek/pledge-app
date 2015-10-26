@@ -12,7 +12,6 @@ import com.pledgeapp.pledge.PledgeApplication;
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.adapters.DonationsAdapter;
 import com.pledgeapp.pledge.helpers.PledgeModel;
-import com.pledgeapp.pledge.helpers.Util;
 import com.pledgeapp.pledge.models.Donation;
 
 import java.util.ArrayList;
@@ -39,15 +38,11 @@ public class DonationHistoryFragment extends Fragment {
         donations = new ArrayList<>();
         aDonations = new DonationsAdapter(getActivity(), donations);
 
-        PledgeApplication.getPledgeModel().getDonationHistory(new PledgeModel.OnResultDelegate<List<Donation>>() {
+        PledgeApplication.getPledgeModel().getDonationHistory(new PledgeModel.OnResultDelegate<List<Donation>>(getContext(), getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<Donation> result) {
+                super.onQueryComplete(result);
                 aDonations.addAll(result);
-            }
-
-            @Override
-            public void onNetworkFailure(List<Donation> results, int errorMessage) {
-                Util.displayNetworkErrorToast(getActivity());
             }
         });
     }

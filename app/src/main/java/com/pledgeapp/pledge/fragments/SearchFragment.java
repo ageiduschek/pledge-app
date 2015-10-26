@@ -154,11 +154,11 @@ public class SearchFragment extends Fragment {
             mLvResults.setOnScrollListener(new EndlessScrollListener() {
                 @Override
                 public boolean onLoadMore(int page, int totalItemCount) {
-                    searchWithPageOffset(query, page);
+                    searchWithPageOffset(query, page, false);
                     return true;
                 }
             });
-            searchWithPageOffset(query, 1);
+            searchWithPageOffset(query, 1, true);
         } else {
             Util.displayNetworkErrorToast(getContext());
         }
@@ -166,19 +166,15 @@ public class SearchFragment extends Fragment {
         hideSoftKeyboard(mSearchView);
     }
 
-    private void searchWithPageOffset(String query, int page) {
+    private void searchWithPageOffset(String query, int page, final boolean showLoadingIndicator) {
         // ProPublica 1-indexes their search results, so we need to convert to 1-indexing
-        mPledgeModel.search(query, mCategoryInfo, page, new PledgeModel.OnResultDelegate<List<NonProfit>>() {
+        mPledgeModel.search(query, mCategoryInfo, page, new PledgeModel.OnResultDelegate<List<NonProfit>>(getContext(), showLoadingIndicator && getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<NonProfit> nonProfits) {
+                super.onQueryComplete(nonProfits);
                 mResultsListAdapter.addAll(nonProfits);
                 mLvSuggestions.setVisibility(View.GONE);
                 mLvResults.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onNetworkFailure(List<NonProfit> results, int errorMessage) {
-                Util.displayNetworkErrorToast(getContext());
             }
         });
     }

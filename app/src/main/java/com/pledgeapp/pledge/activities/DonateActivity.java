@@ -15,7 +15,6 @@ import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.fragments.AddPaymentFragment;
 import com.pledgeapp.pledge.fragments.EnterDonationAmountFragment;
 import com.pledgeapp.pledge.helpers.PledgeModel;
-import com.pledgeapp.pledge.helpers.Util;
 import com.pledgeapp.pledge.models.NonProfit;
 import com.pledgeapp.pledge.models.PledgeCard;
 
@@ -44,9 +43,11 @@ public class DonateActivity extends AppCompatActivity implements AddPaymentFragm
         if (savedInstanceState == null) {
             mNonProfit = getIntent().getParcelableExtra(KEY_NON_PROFIT);
 
-            PledgeApplication.getPledgeModel().getCreditCards(false, new PledgeModel.OnResultDelegate<List<PledgeCard>>() {
+            PledgeApplication.getPledgeModel().getCreditCards(false, new PledgeModel.OnResultDelegate<List<PledgeCard>>(this, true) {
                 @Override
                 public void onQueryComplete(List<PledgeCard> result) {
+                    super.onQueryComplete(result);
+
                     Fragment fragment;
                     if (!result.isEmpty()) {
                         NonProfit nonProfit = getIntent().getParcelableExtra(KEY_NON_PROFIT);
@@ -64,11 +65,6 @@ public class DonateActivity extends AppCompatActivity implements AddPaymentFragm
 
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.flFragmentContainer, fragment).commit();
-                }
-
-                @Override
-                public void onNetworkFailure(List<PledgeCard> results, int errorMessage) {
-                    Util.displayNetworkErrorToast(DonateActivity.this);
                 }
             });
         }

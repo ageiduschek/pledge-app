@@ -1,5 +1,6 @@
 package com.pledgeapp.pledge.helpers;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -28,22 +29,38 @@ import io.card.payment.CreditCard;
  * Created by ageiduschek on 10/23/15.
  */
 public class PledgeModel {
-    /**
-     *
-     * @param <T> The query result type
-     */
-    public interface OnResultDelegate<T> {
-        /**
-         * Callback when results come back in query.
-         * @param result Query result
-         */
-        void onQueryComplete(T result);
+    public static class OnResultDelegate<T> {
+        private ProgressDialog pd;
+        private Context mContext;
+        private boolean mShowSpinner;
 
-        /**
-         *
-         * @param errorMessage String describing error
-         */
-        void onNetworkFailure(T results, int errorMessage);
+        public OnResultDelegate(Context context, boolean showSpinner) {
+            mContext = context;
+            mShowSpinner = showSpinner;
+        }
+
+        public void onBeforeQuery() {
+            if (mShowSpinner) {
+                pd = new ProgressDialog(mContext);
+                pd.setTitle("Loading...");
+                pd.setMessage("Please wait.");
+                pd.setCancelable(false);
+                pd.show();
+            }
+        }
+
+        public void onQueryComplete(T result) {
+            if (pd != null) {
+                pd.dismiss();
+            }
+        }
+
+        public void onNetworkFailure(T results, int errorMessage) {
+            if (pd != null) {
+                pd.dismiss();
+            }
+            Util.displayNetworkErrorToast(mContext);
+        }
     }
 
     private final Handler mIOHandler;
@@ -352,6 +369,8 @@ public class PledgeModel {
         }
 
         public void run() {
+            mDelegate.onBeforeQuery();
+
             final T localResults = getLocalResult();
 
             boolean isNetworkAvailable = Util.isNetworkAvailable(mContext);

@@ -61,16 +61,13 @@ public class AddPaymentFragment  extends Fragment {
     }
 
     private void fetchCreditCards(boolean forceFetchFromServer) {
-        mPledgeModel.getCreditCards(forceFetchFromServer, new PledgeModel.OnResultDelegate<List<PledgeCard>>() {
+        mPledgeModel.getCreditCards(forceFetchFromServer, new PledgeModel.OnResultDelegate<List<PledgeCard>>(getContext(), getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<PledgeCard> result) {
+                super.onQueryComplete(result);
+
                 aCreditCards.clear();
                 aCreditCards.addAll(result);
-            }
-
-            @Override
-            public void onNetworkFailure(List<PledgeCard> results, int errorMessage) {
-
             }
         });
     }

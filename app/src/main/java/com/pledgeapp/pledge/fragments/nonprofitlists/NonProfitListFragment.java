@@ -14,7 +14,6 @@ import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.activities.NonProfitDetailActivity;
 import com.pledgeapp.pledge.adapters.NonProfitArrayAdapter;
 import com.pledgeapp.pledge.helpers.PledgeModel;
-import com.pledgeapp.pledge.helpers.Util;
 import com.pledgeapp.pledge.models.NonProfit;
 
 import java.util.ArrayList;
@@ -54,16 +53,12 @@ public abstract class NonProfitListFragment extends Fragment {
         });
 
         // TODO(nikhilb): Add EndlessScrollListener when the server supports paging
-        fetchNonProfits(new PledgeModel.OnResultDelegate<List<NonProfit>>() {
+        fetchNonProfits(new PledgeModel.OnResultDelegate<List<NonProfit>>(getContext(), getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<NonProfit> result) {
+                super.onQueryComplete(result);
                 aNonProfits.clear();
                 aNonProfits.addAll(result);
-            }
-
-            @Override
-            public void onNetworkFailure(List<NonProfit> results, int errorMessage) {
-                Util.displayNetworkErrorToast(getContext());
             }
         });
 
