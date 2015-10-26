@@ -1,12 +1,14 @@
 package com.pledgeapp.pledge.fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,16 +71,25 @@ public class EnterDonationAmountFragment extends Fragment {
                 btnSubmitDonation.setEnabled(false);
                 final Double donationAmount = getDollarValue(etDonationAmount.getText().toString());
 
+                final ProgressDialog pd = new ProgressDialog(getContext());
+                pd.setMessage("Donating $" + String.format("%.2f", donationAmount) + "...");
+                pd.setTitle("Donation");
+                pd.setCancelable(false);
+                pd.show();
+
                 PledgeApplication.getPledgeModel().donate(donationAmount, nonProfit, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Toast.makeText(getContext(), "You donated $" + donationAmount + "!", Toast.LENGTH_SHORT).show();
+                        pd.dismiss();
+                        Toast.makeText(getContext(), "You donated $" + String.format("%.2f", donationAmount) + "!", Toast.LENGTH_SHORT).show();
                         mListener.onDonationSuccess();
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        super.onFailure(statusCode, headers, responseString, throwable);
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        Log.d("NETWORK ERROR", errorResponse.toString());
+                        Toast.makeText(getContext(), "This nonprofit isn't processing donations", Toast.LENGTH_SHORT).show();
+                        pd.dismiss();
                     }
                 });
             }

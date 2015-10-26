@@ -39,7 +39,7 @@ public class PledgeModel {
             mShowSpinner = showSpinner;
         }
 
-        public void onBeforeQuery() {
+        public void onBeforeNetworkQuery() {
             if (mShowSpinner) {
                 pd = new ProgressDialog(mContext);
                 pd.setTitle("Loading...");
@@ -369,8 +369,6 @@ public class PledgeModel {
         }
 
         public void run() {
-            mDelegate.onBeforeQuery();
-
             final T localResults = getLocalResult();
 
             boolean isNetworkAvailable = Util.isNetworkAvailable(mContext);
@@ -383,6 +381,7 @@ public class PledgeModel {
                 return;
             }
 
+            mDelegate.onBeforeNetworkQuery();
             fetchRemoteResult(new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
