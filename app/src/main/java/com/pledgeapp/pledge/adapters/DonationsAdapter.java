@@ -45,7 +45,7 @@ public class DonationsAdapter extends ArrayAdapter<Donation> {
             convertView.setTag(donationViewHolder);
         }
 
-        donationViewHolder.tvDonationAmount.setText("$" + donation.getAmount());
+        donationViewHolder.tvDonationAmount.setText("$" + String.format("%.2f", donation.getAmount()));
         donationViewHolder.tvDonationDate.setText(DateFormat.getDateInstance().format(donation.getDate().getTime()));
         donationViewHolder.tvNonProfitName.setText(donation.getNonProfitName());
 
