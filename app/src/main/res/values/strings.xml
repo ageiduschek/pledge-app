@@ -39,5 +39,8 @@
     <string name="background_image">background image</string>
     <string name="address_label">Address:</string>
     <string name="category_title">Category:</string>
+    <string name="donation_history_empty">No donations</string>
+    <string name="list_view_empty">No results</string>
+    <string name="search_results_empty">No search results</string>
 
 </resources>

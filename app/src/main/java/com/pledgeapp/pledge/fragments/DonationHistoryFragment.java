@@ -54,6 +54,7 @@ public class DonationHistoryFragment extends Fragment {
 
         ListView lvDonations = (ListView) v.findViewById(R.id.lvDonations);
         lvDonations.setAdapter(aDonations);
+        lvDonations.setEmptyView(v.findViewById(R.id.tvEmpty));
 
         return v;
     }

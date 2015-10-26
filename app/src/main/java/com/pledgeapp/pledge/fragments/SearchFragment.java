@@ -101,6 +101,7 @@ public class SearchFragment extends Fragment {
 
         mLvSuggestions.setVisibility(View.VISIBLE);
         mLvResults.setVisibility(View.GONE);
+        mLvResults.setEmptyView(view.findViewById(R.id.tvEmpty));
 
         if (mCategoryInfo != null) {
             mSearchView.setQueryHint("Search " + mCategoryInfo.name);

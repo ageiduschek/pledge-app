@@ -53,6 +53,7 @@ public class CategoriesSelectionListFragment extends Fragment {
                                                                      mCategoriesAdapter.getItem(position)));
             }
         });
+        lvCategories.setEmptyView(v.findViewById(R.id.tvEmpty));
 
         mCategoriesAdapter.clear();
         mCategoriesAdapter.addAll(NonProfit.getMajorCategoryInfo());

@@ -51,6 +51,7 @@ public abstract class NonProfitListFragment extends Fragment {
                                                                       aNonProfits.getItem(position)));
             }
         });
+        lvNonProfits.setEmptyView(v.findViewById(R.id.tvEmpty));
 
         // TODO(nikhilb): Add EndlessScrollListener when the server supports paging
         fetchNonProfits(new PledgeModel.OnResultDelegate<List<NonProfit>>(getContext(), getUserVisibleHint()) {
