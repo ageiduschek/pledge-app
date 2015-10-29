@@ -25,6 +25,7 @@ import com.pledgeapp.pledge.models.RecentQueriesHelper;
 import com.pledgeapp.pledge.models.SearchSuggestion;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
@@ -48,6 +49,7 @@ public class SearchFragment extends Fragment {
     private SearchSuggestionsArrayAdapter mSuggestionsListAdapter;
     private ListView mLvSuggestions;
     private NonProfitArrayAdapter mResultsListAdapter;
+    private HashSet<String> mSeenIds;
     private ListView mLvResults;
 
     private SearchView mSearchView;
@@ -90,12 +92,13 @@ public class SearchFragment extends Fragment {
 
         mLvResults = (ListView) view.findViewById(R.id.lvSearchResults);
         mResultsListAdapter = new NonProfitArrayAdapter(getContext(), new ArrayList<NonProfit>());
+        mSeenIds = new HashSet<>();
         mLvResults.setAdapter(mResultsListAdapter);
         mLvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 startActivity(NonProfitDetailActivity.getLaunchIntent(getContext(),
-                        mResultsListAdapter.getItem(position)));
+                                                                      mResultsListAdapter.getItem(position)));
             }
         });
 
@@ -127,9 +130,7 @@ public class SearchFragment extends Fragment {
                     } else {
                         mSuggestionsListAdapter.getFilter().filter(newText);
                     }
-                    if (mResultsListAdapter != null) {
-                        mResultsListAdapter.clear();
-                    }
+                    clearResults();
 
                     mLvSuggestions.setVisibility(View.VISIBLE);
                     mLvResults.setVisibility(View.GONE);
@@ -151,7 +152,7 @@ public class SearchFragment extends Fragment {
         mSearchView.setQuery(query, false /*submit query*/);
 
         if (Util.isNetworkAvailable(getContext())) {
-            mResultsListAdapter.clear();
+            clearResults();
             mLvResults.setOnScrollListener(new EndlessScrollListener() {
                 @Override
                 public boolean onLoadMore(int page, int totalItemCount) {
@@ -167,13 +168,25 @@ public class SearchFragment extends Fragment {
         hideSoftKeyboard(mSearchView);
     }
 
+    private void clearResults() {
+        if (mResultsListAdapter != null) {
+            mResultsListAdapter.clear();
+            mSeenIds.clear();
+        }
+    }
+
     private void searchWithPageOffset(String query, int page, final boolean showLoadingIndicator) {
         // ProPublica 1-indexes their search results, so we need to convert to 1-indexing
         mPledgeModel.search(query, mCategoryInfo, page, new PledgeModel.OnResultDelegate<List<NonProfit>>(getContext(), showLoadingIndicator && getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<NonProfit> nonProfits) {
                 super.onQueryComplete(nonProfits);
-                mResultsListAdapter.addAll(nonProfits);
+                for (NonProfit nonProfit : nonProfits) {
+                    if (!mSeenIds.contains(nonProfit.getId())) {
+                        mSeenIds.add(nonProfit.getId());
+                        mResultsListAdapter.add(nonProfit);
+                    }
+                }
                 mLvSuggestions.setVisibility(View.GONE);
                 mLvResults.setVisibility(View.VISIBLE);
             }
