@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.pledgeapp.pledge.helpers.Util;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,7 +71,7 @@ public class NonProfit implements Parcelable {
     }
 
     public String getName() {
-        return name;
+        return Util.titleProperCase(name);
     }
 
     public String getMissionStatement() {
@@ -77,11 +79,11 @@ public class NonProfit implements Parcelable {
     }
 
     public String getAddress() {
-        return address;
+        return Util.titleProperCase(address);
     }
 
     public String getCity() {
-        return city;
+        return Util.titleProperCase(city);
     }
 
     public String getState() {
@@ -208,7 +210,7 @@ public class NonProfit implements Parcelable {
     }
 
     public String getFormattedAddress() {
-        return address + "\n" + city + ", " + state;
+        return getAddress() + "\n" + getCity() + ", " + getState();
     }
 
     // TODO: get a shorter name for each category for displaying in titles / search hint

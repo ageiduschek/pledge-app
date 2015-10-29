@@ -49,8 +49,8 @@ public class NonProfitArrayAdapter extends ArrayAdapter<NonProfit> {
             viewHolder = (NonProfitListItemViewHolder) convertView.getTag();
         }
 
-        viewHolder.tvName.setText(Util.titleProperCase(nonProfit.getName()));
-        viewHolder.tvLocation.setText(Util.titleProperCase(nonProfit.getCity()) + ", " + nonProfit.getState());
+        viewHolder.tvName.setText(nonProfit.getName());
+        viewHolder.tvLocation.setText(nonProfit.getCity() + ", " + nonProfit.getState());
 
         String imageUrl = getImageUrl(position);
 

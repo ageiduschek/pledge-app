@@ -8,6 +8,8 @@ import android.widget.Toast;
 
 import com.pledgeapp.pledge.R;
 
+import java.util.HashSet;
+
 /**
  * A class for various utility functions
  */
@@ -36,12 +38,31 @@ public final class Util {
 
     }
 
+    private static final HashSet<String> sAllCapsWords = getAllCapsWords();
+
+    private static HashSet<String> getAllCapsWords() {
+        HashSet<String> whitelist = new HashSet<>();
+        whitelist.add("PO");
+        whitelist.add("NE");
+        whitelist.add("NW");
+        whitelist.add("SE");
+        whitelist.add("SW");
+        whitelist.add("USA");
+        return whitelist;
+    }
+
     public static String titleProperCase(String title) {
         StringBuilder resultBuilder = new StringBuilder();
         String [] tokens = title.toLowerCase().split(" ");
 
         for (int i = 0; i < tokens.length; i++) {
-            String capitalizedStr = String.valueOf(tokens[i].charAt(0)).toUpperCase() + tokens[i].substring(1);
+            String capitalizedStr;
+            if (sAllCapsWords.contains(tokens[i].toUpperCase())) {
+                capitalizedStr = tokens[i].toUpperCase();
+            } else {
+                capitalizedStr = String.valueOf(tokens[i].charAt(0)).toUpperCase() + tokens[i].substring(1);
+            }
+            
             resultBuilder.append(capitalizedStr);
             if (i < tokens.length - 1) {
                 resultBuilder.append(' ');
