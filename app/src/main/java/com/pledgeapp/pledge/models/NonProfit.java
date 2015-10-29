@@ -191,14 +191,16 @@ public class NonProfit implements Parcelable {
     public String getCategoryName() {
         Log.d("DEBUG", "nteeCode: " + nteeCode);
         if (nteeCode != null) {
-            String subcategory = nteeCode.substring(0, 1);
+            String subcategory = nteeCode.substring(0, 1).toUpperCase();
             // Strip all non-numeric chars
             String section = nteeCode.replaceAll("[^\\d]", "");
             // Trim leading zeros until we're at 2 chars
             section = section.length() > 2 ? section.replaceFirst("^0", "") : section;
             section = section.length() > 2 ? section.replaceFirst("0$", "") : section;
             Log.d("DEBUG", "Subcategory: " + subcategory + " section: " + section);
-            return sNTEECodeToName.get(subcategory).get(subcategory+section);
+            if (sNTEECodeToName.get(subcategory) != null) {
+                return sNTEECodeToName.get(subcategory).get(subcategory+section);
+            }
         }
 
         return null;

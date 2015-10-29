@@ -83,7 +83,11 @@ public class NonProfitDetailActivity extends AppCompatActivity {
         }
 
         TextView tvCategory = (TextView) findViewById(R.id.tvCategory);
-        tvCategory.setText(nonProfit.getCategoryName());
+        if (nonProfit.getCategoryName() != null) {
+            tvCategory.setText(nonProfit.getCategoryName());
+        } else {
+            findViewById(R.id.tvCategoryTitle).setVisibility(View.GONE);
+        }
     }
 
     @Override

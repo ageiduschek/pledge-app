@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.pledgeapp.pledge.EndlessScrollListener;
 import com.pledgeapp.pledge.PledgeApplication;
@@ -52,6 +53,7 @@ public class SearchFragment extends Fragment {
     private HashSet<String> mSeenIds;
     private ListView mLvResults;
 
+    private TextView mEmptyView;
     private SearchView mSearchView;
 
     private PledgeModel mPledgeModel;
@@ -104,7 +106,8 @@ public class SearchFragment extends Fragment {
 
         mLvSuggestions.setVisibility(View.VISIBLE);
         mLvResults.setVisibility(View.GONE);
-        mLvResults.setEmptyView(view.findViewById(R.id.tvEmpty));
+        mEmptyView = (TextView) view.findViewById(R.id.tvEmpty);
+        mLvResults.setEmptyView(mEmptyView);
 
         if (mCategoryInfo != null) {
             mSearchView.setQueryHint("Search " + mCategoryInfo.name);
@@ -134,6 +137,7 @@ public class SearchFragment extends Fragment {
 
                     mLvSuggestions.setVisibility(View.VISIBLE);
                     mLvResults.setVisibility(View.GONE);
+                    mEmptyView.setText("");
                 }
                 return true;
             }
@@ -172,10 +176,11 @@ public class SearchFragment extends Fragment {
         if (mResultsListAdapter != null) {
             mResultsListAdapter.clear();
             mSeenIds.clear();
+            mEmptyView.setText("");
         }
     }
 
-    private void searchWithPageOffset(String query, int page, final boolean showLoadingIndicator) {
+    private void searchWithPageOffset(final String query, int page, final boolean showLoadingIndicator) {
         // ProPublica 1-indexes their search results, so we need to convert to 1-indexing
         mPledgeModel.search(query, mCategoryInfo, page, new PledgeModel.OnResultDelegate<List<NonProfit>>(getContext(), showLoadingIndicator && getUserVisibleHint()) {
             @Override
@@ -189,6 +194,7 @@ public class SearchFragment extends Fragment {
                 }
                 mLvSuggestions.setVisibility(View.GONE);
                 mLvResults.setVisibility(View.VISIBLE);
+                mEmptyView.setText("No results for query \'" + query + "\'");
             }
         });
     }
