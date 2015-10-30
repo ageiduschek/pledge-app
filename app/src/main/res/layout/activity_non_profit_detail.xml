@@ -155,7 +155,7 @@
         android:layout_height="100dp"
         android:layout_gravity="end|bottom"
         app:borderWidth="0dp"
-        android:layout_margin="15dp"
+        android:layout_margin="@dimen/floating_action_button_margin"
         android:src="@drawable/ic_donate_dark"
         android:scaleType="fitXY"
         />

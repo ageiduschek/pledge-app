@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.pledgeapp.pledge.PledgeApplication;
 import com.pledgeapp.pledge.R;
@@ -21,6 +22,7 @@ public class DonationHistoryFragment extends Fragment {
 
     private List<Donation> donations;
     private DonationsAdapter aDonations;
+    private TextView tvTotalDonations;
 
     public static DonationHistoryFragment newInstance() {
         
@@ -43,6 +45,7 @@ public class DonationHistoryFragment extends Fragment {
             public void onQueryComplete(List<Donation> result) {
                 super.onQueryComplete(result);
                 aDonations.addAll(result);
+                updateDonationsTotalLabel();
             }
         });
     }
@@ -54,8 +57,26 @@ public class DonationHistoryFragment extends Fragment {
 
         ListView lvDonations = (ListView) v.findViewById(R.id.lvDonations);
         lvDonations.setAdapter(aDonations);
-        lvDonations.setEmptyView(v.findViewById(R.id.tvEmpty));
+        tvTotalDonations = (TextView) v.findViewById(R.id.tvTotalDonations);
+        updateDonationsTotalLabel();
 
         return v;
+    }
+
+    private void updateDonationsTotalLabel() {
+        if (tvTotalDonations == null) {
+            return;
+        }
+
+        double donationTotal = 0;
+        for (Donation result : donations) {
+            donationTotal += result.getAmount();
+        }
+
+        if (donationTotal > 0) {
+            tvTotalDonations.setText("$" + String.format("%.2f", donationTotal));
+        } else {
+            tvTotalDonations.setText(R.string.donation_history_empty);
+        }
     }
 }

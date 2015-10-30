@@ -122,6 +122,7 @@ public class SearchFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 doSearchQuery(mSearchView.getQuery().toString());
+                mSearchView.clearFocus();
                 return true;
             }
 

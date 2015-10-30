@@ -42,5 +42,6 @@
     <string name="donation_history_empty">No donations</string>
     <string name="list_view_empty">No results</string>
     <string name="search_results_empty">No search results</string>
+    <string name="credit_card_empty">No credit cards added</string>
 
 </resources>

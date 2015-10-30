@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,8 +27,6 @@ import com.pledgeapp.pledge.models.NonProfit;
 
 import org.apache.http.Header;
 import org.json.JSONObject;
-
-import java.text.NumberFormat;
 
 /**
  * Fragment for entering a donation amount
@@ -140,7 +139,7 @@ public class EnterDonationAmountFragment extends Fragment {
                 // Disable if it ends with period
                 boolean endsWithPeriod = periodIndex == str.length();
                 btnSubmitDonation.setEnabled(!endsWithPeriod && dollarValue >= MIN_DONATION_AMOUNT
-                                                     && dollarValue <= MAX_DONATION_AMOUNT);
+                        && dollarValue <= MAX_DONATION_AMOUNT);
 
             }
 
@@ -150,6 +149,9 @@ public class EnterDonationAmountFragment extends Fragment {
         });
 
         etDonationAmount.setText("$");
+        if(etDonationAmount.requestFocus()) {
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
 
         TextView tvNonProfitName = (TextView) v.findViewById(R.id.tvNonProfitName);
         tvNonProfitName.setText(nonProfit.getName());

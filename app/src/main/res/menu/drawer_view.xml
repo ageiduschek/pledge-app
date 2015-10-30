@@ -13,10 +13,10 @@
             android:id="@+id/nav_payment_method"
             android:icon="@drawable/ic_credit_card"
             android:title="@string/add_payment_method_menu_title" />
-        <item
-            android:id="@+id/nav_link_employer"
-            android:icon="@drawable/ic_employer"
-            android:title="@string/link_employer_menu_title" />
+        <!--<item-->
+            <!--android:id="@+id/nav_link_employer"-->
+            <!--android:icon="@drawable/ic_employer"-->
+            <!--android:title="@string/link_employer_menu_title" />-->
         <item
             android:id="@+id/nav_account_settings"
             android:icon="@drawable/ic_settings"

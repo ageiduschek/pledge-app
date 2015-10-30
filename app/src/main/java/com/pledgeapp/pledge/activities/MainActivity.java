@@ -4,31 +4,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-
 import com.pledgeapp.pledge.R;
 import com.pledgeapp.pledge.fragments.AccountSettingsFragment;
 import com.pledgeapp.pledge.fragments.AddPaymentFragment;
 import com.pledgeapp.pledge.fragments.BrowseFragment;
 import com.pledgeapp.pledge.fragments.DonationHistoryFragment;
-import com.pledgeapp.pledge.fragments.LinkEmployerFragment;
 import com.pledgeapp.pledge.fragments.SearchFragment;
-import com.pledgeapp.pledge.fragments.nonprofitlists.CategoriesSelectionListFragment;
-import com.pledgeapp.pledge.models.NonProfit;
 
 import java.util.ArrayList;
 
@@ -178,9 +172,9 @@ public class MainActivity extends BaseActivity implements AddPaymentFragment.Add
             case R.id.nav_payment_method:
                 fragmentClass = AddPaymentFragment.class;
                 break;
-            case R.id.nav_link_employer:
-                fragmentClass = LinkEmployerFragment.class;
-                break;
+//            case R.id.nav_link_employer:
+//                fragmentClass = LinkEmployerFragment.class;
+//                break;
             case R.id.nav_account_settings:
                 fragmentClass = AccountSettingsFragment.class;
                 break;
@@ -216,7 +210,7 @@ public class MainActivity extends BaseActivity implements AddPaymentFragment.Add
         fragmentClasses.add(BrowseFragment.class);
         fragmentClasses.add(DonationHistoryFragment.class);
         fragmentClasses.add(AddPaymentFragment.class);
-        fragmentClasses.add(LinkEmployerFragment.class);
+//        fragmentClasses.add(LinkEmployerFragment.class);
         fragmentClasses.add(AccountSettingsFragment.class);
         fragmentClasses.add(SearchFragment.class);
         return fragmentClasses;

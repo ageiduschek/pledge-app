@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +35,8 @@ public class AddPaymentFragment  extends Fragment {
 
     public static final int REQUEST_CODE_SCAN_CREDIT_CARD = 4;
     private AddPaymentFragmentListener mListener;
+
+    private FloatingActionButton fabAddCard;
 
     private List<PledgeCard> creditCards;
     private CreditCardAdapter aCreditCards;
@@ -82,20 +85,25 @@ public class AddPaymentFragment  extends Fragment {
         lvCreditCards.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i == lvCreditCards.getAdapter().getCount() - 1) {
-                    // It's the final item, we should add a new credit card
-                    Intent scanIntent = new Intent(getContext(), CardIOActivity.class);
+                // TODO(nikhilb): View the credit card in detail
+            }
+        });
 
-                    scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true);
-                    scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, true);
-                    scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_POSTAL_CODE, true);
-                    scanIntent.putExtra(CardIOActivity.EXTRA_USE_PAYPAL_ACTIONBAR_ICON, false);
-                    scanIntent.putExtra(CardIOActivity.EXTRA_KEEP_APPLICATION_THEME, true);
+        lvCreditCards.setEmptyView(v.findViewById(R.id.tvEmpty));
 
-                    mListener.onScanCardRequested(scanIntent);
-                } else {
-                    // TODO(nikhilb): View the credit card in detail
-                }
+        fabAddCard = (FloatingActionButton) v.findViewById(R.id.fabAddCard);
+        fabAddCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent scanIntent = new Intent(getContext(), CardIOActivity.class);
+
+                scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_EXPIRY, true);
+                scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_CVV, true);
+                scanIntent.putExtra(CardIOActivity.EXTRA_REQUIRE_POSTAL_CODE, true);
+                scanIntent.putExtra(CardIOActivity.EXTRA_USE_PAYPAL_ACTIONBAR_ICON, false);
+                scanIntent.putExtra(CardIOActivity.EXTRA_KEEP_APPLICATION_THEME, true);
+
+                mListener.onScanCardRequested(scanIntent);
             }
         });
 
