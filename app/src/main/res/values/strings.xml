@@ -34,7 +34,7 @@
     <string name="title_activity_choose_amount">ChooseAmountActivity</string>
     <string name="add_credit_card">Add Credit Card</string>
     <string name="credit_card_type_icon">credit card type icon</string>
-    <string name="enter_amount_plea">Enter amount to donate to</string>
+    <string name="enter_amount_plea">Enter amount to donate</string>
     <string name="submit_donation">Submit Donation</string>
     <string name="background_image">background image</string>
     <string name="address_label">Address:</string>

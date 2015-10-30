@@ -2,6 +2,7 @@ package com.pledgeapp.pledge.fragments;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -34,7 +36,10 @@ public class EnterDonationAmountFragment extends Fragment {
 
     private static final String KEY_NON_PROFIT = "key_non_profit";
     private static final double MIN_DONATION_AMOUNT = 10.00; // In dollars
+    private static final double MAX_DONATION_AMOUNT = 1000.00;
     private onDonationSuccessListener mListener;
+
+    private EditText etDonationAmount;
 
     public interface onDonationSuccessListener {
         void onDonationSuccess();
@@ -56,14 +61,14 @@ public class EnterDonationAmountFragment extends Fragment {
         // TODO: Create view for this fragment!
         View v =  inflater.inflate(R.layout.fragment_enter_amount, container, false);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().hide();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.enter_amount_plea);
 
         final NonProfit nonProfit = getArguments().getParcelable(KEY_NON_PROFIT);
         if (nonProfit == null) {
             throw new RuntimeException("Must pass nonprofit to this fragment");
         }
 
-        final EditText etDonationAmount = (EditText) v.findViewById(R.id.etDonationAmount);
+        etDonationAmount = (EditText) v.findViewById(R.id.etDonationAmount);
         final Button btnSubmitDonation = (Button) v.findViewById(R.id.btnSubmitDonation);
         btnSubmitDonation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,11 +95,12 @@ public class EnterDonationAmountFragment extends Fragment {
                         Log.d("NETWORK ERROR", errorResponse.toString());
                         Toast.makeText(getContext(), "This nonprofit isn't processing donations", Toast.LENGTH_SHORT).show();
                         pd.dismiss();
+                        btnSubmitDonation.setEnabled(true);
                     }
                 });
             }
         });
-        btnSubmitDonation.setEnabled(false);
+        btnSubmitDonation.setEnabled(true);
 
         etDonationAmount.addTextChangedListener(new TextWatcher() {
             @Override
@@ -106,15 +112,35 @@ public class EnterDonationAmountFragment extends Fragment {
 
                 etDonationAmount.removeTextChangedListener(this);
 
-                double dollarValue = getDollarValue(s.toString());
-                String formatted = NumberFormat.getCurrencyInstance().format(dollarValue);
+                String str = s.toString();
+                double dollarValue = getDollarValue(str);
 
-                etDonationAmount.setText(formatted);
-                etDonationAmount.setSelection(formatted.length());
+                // Remove commas
+                str = str.replaceAll("[$,]", "");
+
+                // Remove leading 0s
+                str = str.replaceFirst("^0+", "");
+
+                // Always prepend $
+                str = "$" + str;
+
+                Log.d("ASDF", "str: " + str);
+
+                int periodIndex = str.indexOf('.');
+                if (periodIndex != -1 && periodIndex + 2 < str.length() - 1) {
+                    str = str.substring(0, periodIndex + 3);
+                }
+
+
+                etDonationAmount.setText(str);
+                etDonationAmount.setSelection(str.length());
 
                 etDonationAmount.addTextChangedListener(this);
 
-                btnSubmitDonation.setEnabled(dollarValue >= MIN_DONATION_AMOUNT);
+                // Disable if it ends with period
+                boolean endsWithPeriod = periodIndex == str.length();
+                btnSubmitDonation.setEnabled(!endsWithPeriod && dollarValue >= MIN_DONATION_AMOUNT
+                                                     && dollarValue <= MAX_DONATION_AMOUNT);
 
             }
 
@@ -123,24 +149,30 @@ public class EnterDonationAmountFragment extends Fragment {
             }
         });
 
-        etDonationAmount.setText(NumberFormat.getCurrencyInstance().format(0));
+        etDonationAmount.setText("$");
 
         TextView tvNonProfitName = (TextView) v.findViewById(R.id.tvNonProfitName);
         tvNonProfitName.setText(nonProfit.getName());
-
         return v;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        etDonationAmount.setFocusableInTouchMode(true);
+        etDonationAmount.requestFocus();
+    }
+
     public double getDollarValue(String formattedString) {
-        String cleanString = formattedString.replaceAll("[$,.]", "");
+        String cleanStringDollars = formattedString.replaceAll("[$,]", "");
         double dollarValue;
-        if (!cleanString.isEmpty()) {
-            dollarValue = Double.parseDouble(cleanString) / 100;
+        if (!cleanStringDollars.isEmpty()) {
+            dollarValue = Double.parseDouble(cleanStringDollars);
         } else {
             dollarValue = 0;
         }
 
-        return dollarValue;
+        return Math.round(dollarValue*100.0)/100.0;
     }
 
     @Override
@@ -158,5 +190,11 @@ public class EnterDonationAmountFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void showSoftKeyboard(View view){
+        InputMethodManager imm =
+                (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
     }
 }
