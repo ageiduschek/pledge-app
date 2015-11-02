@@ -86,6 +86,16 @@ public class PledgeClient {
         mClient.post(apiUrl, params, handler);
     }
 
+    public void deleteCreditCard(String userId, String cardId, AsyncHttpResponseHandler handler) {
+        String apiUrl = getApiUrl("/delete_credit_card");
+
+        RequestParams params = new RequestParams();
+        params.put("user_id", userId);
+        params.put("card_id", cardId);
+
+        mClient.get(apiUrl, params, handler);
+    }
+
     public void donate(String userId, String cardId, double amount, NonProfit nonProfit, AsyncHttpResponseHandler handler) {
         String apiUrl = getApiUrl("/donate");
 

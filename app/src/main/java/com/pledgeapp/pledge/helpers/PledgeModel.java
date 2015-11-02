@@ -194,6 +194,10 @@ public class PledgeModel {
         postWhenBootstrapComplete(new SearchQueryTask(query, category, page, delegate));
     }
 
+    public void deleteCreditCard(PledgeCard card, OnResultDelegate delegate) {
+        postWhenBootstrapComplete(new DeleteCreditCardTask(card, delegate));
+    }
+
     private class GetFeaturedTask extends GetQueryTask<List<NonProfit>> {
         public GetFeaturedTask(OnResultDelegate<List<NonProfit>> delegate) {
             super(delegate);
@@ -217,6 +221,11 @@ public class PledgeModel {
         @Override
         protected List<NonProfit> parseRemoteResult(Context context, JSONArray resultJSON) {
             return NonProfit.fromJSONArray(resultJSON);
+        }
+
+        @Override
+        protected List<NonProfit> parseRemoteResult(Context context, JSONObject resultJSON) {
+            return null;
         }
     }
 
@@ -243,6 +252,11 @@ public class PledgeModel {
         @Override
         protected List<NonProfit> parseRemoteResult(Context context, JSONArray resultJSON) {
             return NonProfit.fromJSONArray(resultJSON);
+        }
+
+        @Override
+        protected List<NonProfit> parseRemoteResult(Context context, JSONObject resultJSON) {
+            return null;
         }
     }
 
@@ -285,6 +299,11 @@ public class PledgeModel {
 
             return creditCards;
         }
+
+        @Override
+        protected List<PledgeCard> parseRemoteResult(Context context, JSONObject resultJSON) {
+            return null;
+        }
     }
 
     private class GetDonationHistoryTask extends GetQueryTask<List<Donation>> {
@@ -311,6 +330,46 @@ public class PledgeModel {
         @Override
         protected List<Donation> parseRemoteResult(Context context, JSONArray resultJSON) {
             return Donation.fromJsonArray(resultJSON);
+        }
+
+        @Override
+        protected List<Donation> parseRemoteResult(Context context, JSONObject resultJSON) {
+            return null;
+        }
+    }
+
+    private class DeleteCreditCardTask extends GetQueryTask {
+
+        private String cardId;
+
+        public DeleteCreditCardTask(PledgeCard card, OnResultDelegate delegate) {
+            super(delegate);
+            cardId = card.getId();
+        }
+
+        @Override
+        protected Object getLocalResult() {
+            return null;
+        }
+
+        @Override
+        protected boolean shouldSkipRemoteQuery(Object localResult) {
+            return false;
+        }
+
+        @Override
+        protected void fetchRemoteResult(JsonHttpResponseHandler httpResponseHandler) {
+            PledgeClient.getInstance().deleteCreditCard(mUser.getUserId(), cardId, httpResponseHandler);
+        }
+
+        @Override
+        protected Object parseRemoteResult(Context context, JSONArray resultJSON) {
+            return null;
+        }
+
+        @Override
+        protected Object parseRemoteResult(Context context, JSONObject resultJSON) {
+            return null;
         }
     }
 
@@ -349,6 +408,11 @@ public class PledgeModel {
         protected List<NonProfit> parseRemoteResult(Context context, JSONArray resultJSON) {
             return NonProfit.fromJSONArray(resultJSON);
         }
+
+        @Override
+        protected List<NonProfit> parseRemoteResult(Context context, JSONObject resultJSON) {
+            return null;
+        }
     }
 
     private abstract class GetQueryTask<T> implements Runnable {
@@ -356,6 +420,7 @@ public class PledgeModel {
         protected abstract boolean shouldSkipRemoteQuery(T localResult);
         protected abstract void fetchRemoteResult(JsonHttpResponseHandler httpResponseHandler);
         protected abstract T parseRemoteResult(Context context, JSONArray resultJSON);
+        protected abstract T parseRemoteResult(Context context, JSONObject resultJSON);
 
         private OnResultDelegate<T> mDelegate;
 
@@ -385,6 +450,11 @@ public class PledgeModel {
             fetchRemoteResult(new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                    postSuccess(parseRemoteResult(mContext, response));
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     postSuccess(parseRemoteResult(mContext, response));
                 }
 

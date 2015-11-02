@@ -89,6 +89,22 @@ public class AddPaymentFragment  extends Fragment {
             }
         });
 
+        lvCreditCards.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final PledgeCard card = (PledgeCard) adapterView.getItemAtPosition(i);
+                mPledgeModel.deleteCreditCard(card, new PledgeModel.OnResultDelegate(getContext(), true) {
+                    @Override
+                    public void onQueryComplete(Object result) {
+                        super.onQueryComplete(result);
+                        aCreditCards.remove(card);
+                    }
+                });
+
+                return true;
+            }
+        });
+
         lvCreditCards.setEmptyView(v.findViewById(R.id.tvEmpty));
 
         fabAddCard = (FloatingActionButton) v.findViewById(R.id.fabAddCard);
