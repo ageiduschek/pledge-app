@@ -7,5 +7,7 @@
         android:id="@+id/ivHeader"
         android:layout_width="match_parent"
         android:layout_height="240dp"
-        android:background="@color/primary_light"/>
+        android:src="@drawable/header"
+        android:scaleType="centerCrop"
+        />
 </LinearLayout>
