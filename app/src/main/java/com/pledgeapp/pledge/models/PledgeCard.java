@@ -3,6 +3,8 @@ package com.pledgeapp.pledge.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.card.payment.CreditCard;
+
 /**
  * Created by nikhil on 10/24/15.
  */
@@ -27,6 +29,20 @@ public class PledgeCard {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        return card;
+    }
+
+    public static PledgeCard fromCreditCard(CreditCard creditCard) {
+        PledgeCard card = new PledgeCard();
+
+        card.cardSuffix = creditCard.getLastFourDigitsOfCardNumber();
+        card.type = creditCard.getCardType().toString();
+
+        card.id = "0";
+
+        card.expiryMonth = creditCard.expiryMonth;
+        card.expiryYear = creditCard.expiryYear;
 
         return card;
     }

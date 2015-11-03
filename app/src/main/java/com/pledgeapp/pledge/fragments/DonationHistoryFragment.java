@@ -74,7 +74,7 @@ public class DonationHistoryFragment extends Fragment {
         }
 
         if (donationTotal > 0) {
-            tvTotalDonations.setText("$" + String.format("%.2f", donationTotal));
+            tvTotalDonations.setText("You've donated: $" + String.format("%.2f", donationTotal));
         } else {
             tvTotalDonations.setText(R.string.donation_history_empty);
         }
