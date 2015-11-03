@@ -3,13 +3,23 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:minHeight="100dp"
-              android:padding="10dp">
+              >
+    <ImageView
+        android:id="@+id/ivCategoryImage"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:src="@drawable/art_culture"
+        android:scaleType="centerCrop"
+        />
     <TextView
         android:id="@+id/tvCategoryName"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textSize="30sp"
-        android:gravity="center_vertical|center_horizontal"/>
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/default_font_size"
+        android:gravity="center_vertical"
+        android:padding="@dimen/default_margin"
+        android:textColor="@color/primary_text"
+        android:text="Arts, Culture, and Humanities"
+        />
 
 </LinearLayout>
