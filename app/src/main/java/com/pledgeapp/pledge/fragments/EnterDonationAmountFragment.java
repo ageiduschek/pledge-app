@@ -91,8 +91,14 @@ public class EnterDonationAmountFragment extends Fragment {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Log.d("NETWORK ERROR", errorResponse.toString());
-                        Toast.makeText(getContext(), "This nonprofit isn't processing donations", Toast.LENGTH_SHORT).show();
+                        String errorStr;
+                        if (errorResponse != null) {
+                            Log.d("NETWORK ERROR", errorResponse.toString());
+                            errorStr = "This nonprofit isn't processing donations";
+                        } else {
+                            errorStr = "Network error";
+                        }
+                        Toast.makeText(getContext(), errorStr, Toast.LENGTH_SHORT).show();
                         pd.dismiss();
                         btnSubmitDonation.setEnabled(true);
                     }
@@ -112,13 +118,15 @@ public class EnterDonationAmountFragment extends Fragment {
                 etDonationAmount.removeTextChangedListener(this);
 
                 String str = s.toString();
-                double dollarValue = getDollarValue(str);
-
                 // Remove commas
                 str = str.replaceAll("[$,]", "");
 
-                // Remove leading 0s
-                str = str.replaceFirst("^0+", "");
+                if (str.length() > 0 && str.charAt(0) == '.') {
+                    str = "0.";
+                } else if (!str.startsWith("0.")) {
+                    // Remove leading 0s, except not the last one if it is all zero
+                    str = str.replaceFirst("^0+", "");
+                }
 
                 // Always prepend $
                 str = "$" + str;
@@ -136,6 +144,7 @@ public class EnterDonationAmountFragment extends Fragment {
 
                 etDonationAmount.addTextChangedListener(this);
 
+                double dollarValue = getDollarValue(str);
                 // Disable if it ends with period
                 boolean endsWithPeriod = periodIndex == str.length();
                 btnSubmitDonation.setEnabled(!endsWithPeriod && dollarValue >= MIN_DONATION_AMOUNT

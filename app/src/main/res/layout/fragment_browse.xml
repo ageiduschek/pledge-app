@@ -10,6 +10,7 @@
         android:layout_height="48dp"
         android:id="@+id/tabStrip"
         android:background="?colorPrimary"
+        android:elevation="@dimen/toolbar_elevation"
         app:pstsShouldExpand="true"
         app:pstsIndicatorColor="@android:color/white"
     />

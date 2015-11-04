@@ -37,6 +37,7 @@ public class NonProfitDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setElevation(R.dimen.no_elevation);
         }
 
         final NonProfit nonProfit = getIntent().getParcelableExtra(KEY_NON_PROFIT);
