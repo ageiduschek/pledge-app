@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -33,14 +34,16 @@ public class PledgeModel {
         private ProgressDialog pd;
         private Context mContext;
         private boolean mShowSpinner;
+        private boolean mCancelled;
 
         public OnResultDelegate(Context context, boolean showSpinner) {
             mContext = context;
             mShowSpinner = showSpinner;
+            mCancelled = false;
         }
 
         public void onBeforeNetworkQuery() {
-            if (mShowSpinner) {
+            if (mShowSpinner && !mCancelled) {
                 pd = new ProgressDialog(mContext);
                 pd.setTitle("Loading...");
                 pd.setMessage("Please wait.");
@@ -52,14 +55,30 @@ public class PledgeModel {
         public void onQueryComplete(T result) {
             if (pd != null) {
                 pd.dismiss();
+                pd = null;
             }
         }
 
         public void onNetworkFailure(T results, int errorMessage) {
             if (pd != null) {
                 pd.dismiss();
+                pd = null;
             }
-            Util.displayNetworkErrorToast(mContext);
+            if (!mCancelled) {
+                Util.displayNetworkErrorToast(mContext);
+            }
+        }
+
+        public void cancel(){
+            mCancelled = true;
+            if (pd != null) {
+                pd.dismiss();
+                pd = null;
+            }
+        }
+
+        public boolean isCancelled() {
+            return mCancelled;
         }
     }
 
@@ -474,7 +493,9 @@ public class PledgeModel {
             mResponseHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mDelegate.onQueryComplete(result);
+                    if (!mDelegate.isCancelled()) {
+                        mDelegate.onQueryComplete(result);
+                    }
                 }
             });
         }

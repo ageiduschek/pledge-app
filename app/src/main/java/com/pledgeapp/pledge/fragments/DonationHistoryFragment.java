@@ -24,6 +24,8 @@ public class DonationHistoryFragment extends Fragment {
     private DonationsAdapter aDonations;
     private TextView tvTotalDonations;
 
+    private PledgeModel.OnResultDelegate<List<Donation>> mDelegate;
+
     public static DonationHistoryFragment newInstance() {
         
         Bundle args = new Bundle();
@@ -40,14 +42,17 @@ public class DonationHistoryFragment extends Fragment {
         donations = new ArrayList<>();
         aDonations = new DonationsAdapter(getActivity(), donations);
 
-        PledgeApplication.getPledgeModel().getDonationHistory(new PledgeModel.OnResultDelegate<List<Donation>>(getContext(), getUserVisibleHint()) {
+
+        mDelegate = new PledgeModel.OnResultDelegate<List<Donation>>(getContext(), getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<Donation> result) {
                 super.onQueryComplete(result);
                 aDonations.addAll(result);
                 updateDonationsTotalLabel();
             }
-        });
+        };
+
+        PledgeApplication.getPledgeModel().getDonationHistory(mDelegate);
     }
 
     @Nullable
@@ -78,5 +83,11 @@ public class DonationHistoryFragment extends Fragment {
         } else {
             tvTotalDonations.setText(R.string.donation_history_empty);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mDelegate.cancel();
     }
 }

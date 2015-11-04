@@ -2,7 +2,6 @@ package com.pledgeapp.pledge.fragments.nonprofitlists;
 
 import android.os.Bundle;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pledgeapp.pledge.helpers.PledgeModel;
 import com.pledgeapp.pledge.models.NonProfit;
 

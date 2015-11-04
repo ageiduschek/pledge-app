@@ -26,6 +26,7 @@ public abstract class NonProfitListFragment extends Fragment {
 
     protected PledgeModel mPledgeModel;
     private NonProfitArrayAdapter aNonProfits;
+    private PledgeModel.OnResultDelegate<List<NonProfit>> mDelegate;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,17 +55,25 @@ public abstract class NonProfitListFragment extends Fragment {
         lvNonProfits.setEmptyView(v.findViewById(R.id.tvEmpty));
 
         // TODO(nikhilb): Add EndlessScrollListener when the server supports paging
-        fetchNonProfits(new PledgeModel.OnResultDelegate<List<NonProfit>>(getContext(), getUserVisibleHint()) {
+        mDelegate = new PledgeModel.OnResultDelegate<List<NonProfit>>(getContext(), getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<NonProfit> result) {
                 super.onQueryComplete(result);
                 aNonProfits.clear();
                 aNonProfits.addAll(result);
             }
-        });
+        };
+
+        fetchNonProfits(mDelegate);
 
         return v;
     }
 
     protected abstract void fetchNonProfits(PledgeModel.OnResultDelegate<List<NonProfit>> delegate);
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mDelegate.cancel();
+    }
 }

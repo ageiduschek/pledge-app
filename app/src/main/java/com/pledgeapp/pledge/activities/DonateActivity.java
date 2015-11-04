@@ -26,6 +26,7 @@ public class DonateActivity extends AppCompatActivity implements AddPaymentFragm
 
     private NonProfit mNonProfit;
     private AddPaymentFragment mAddPaymentFragment;
+    private PledgeModel.OnResultDelegate<List<PledgeCard>> mDelegate;
 
     public static Intent getLaunchIntent(Context context, NonProfit nonProfit) {
 
@@ -43,7 +44,7 @@ public class DonateActivity extends AppCompatActivity implements AddPaymentFragm
         if (savedInstanceState == null) {
             mNonProfit = getIntent().getParcelableExtra(KEY_NON_PROFIT);
 
-            PledgeApplication.getPledgeModel().getCreditCards(false, new PledgeModel.OnResultDelegate<List<PledgeCard>>(this, true) {
+            mDelegate = new PledgeModel.OnResultDelegate<List<PledgeCard>>(this, true) {
                 @Override
                 public void onQueryComplete(List<PledgeCard> result) {
                     super.onQueryComplete(result);
@@ -66,7 +67,9 @@ public class DonateActivity extends AppCompatActivity implements AddPaymentFragm
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.flFragmentContainer, fragment).commit();
                 }
-            });
+            };
+
+            PledgeApplication.getPledgeModel().getCreditCards(false, mDelegate);
         }
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -105,5 +108,11 @@ public class DonateActivity extends AppCompatActivity implements AddPaymentFragm
         if (requestCode == AddPaymentFragment.REQUEST_CODE_SCAN_CREDIT_CARD) {
             mAddPaymentFragment.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mDelegate.cancel();
     }
 }

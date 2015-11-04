@@ -60,6 +60,8 @@ public class SearchFragment extends Fragment {
     // Optionally set if we are searching within a category
     private NonProfit.CategoryInfo mCategoryInfo;
 
+    private List<PledgeModel.OnResultDelegate<List<NonProfit>>> mDelegates = new ArrayList<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +115,20 @@ public class SearchFragment extends Fragment {
             mSearchView.setQueryHint("Search " + mCategoryInfo.name);
         }
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        cancelOutstandingDelegates();
+    }
+
+    private void cancelOutstandingDelegates() {
+        for (PledgeModel.OnResultDelegate delegate : mDelegates) {
+            delegate.cancel();
+        }
+
+        mDelegates.clear();
     }
 
     // TODO (ageiduschek): Figure out how to register this listener only after onCreateView()
@@ -179,11 +195,11 @@ public class SearchFragment extends Fragment {
             mSeenIds.clear();
             mEmptyView.setText("");
         }
+        cancelOutstandingDelegates();
     }
 
     private void searchWithPageOffset(final String query, int page, final boolean showLoadingIndicator) {
-        // ProPublica 1-indexes their search results, so we need to convert to 1-indexing
-        mPledgeModel.search(query, mCategoryInfo, page, new PledgeModel.OnResultDelegate<List<NonProfit>>(getContext(), showLoadingIndicator && getUserVisibleHint()) {
+        PledgeModel.OnResultDelegate<List<NonProfit>> delegate = new PledgeModel.OnResultDelegate<List<NonProfit>>(getContext(), showLoadingIndicator && getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<NonProfit> nonProfits) {
                 super.onQueryComplete(nonProfits);
@@ -197,7 +213,12 @@ public class SearchFragment extends Fragment {
                 mLvResults.setVisibility(View.VISIBLE);
                 mEmptyView.setText("No results for query \'" + query + "\'");
             }
-        });
+        };
+
+        mDelegates.add(delegate);
+
+        // ProPublica 1-indexes their search results, so we need to convert to 1-indexing
+        mPledgeModel.search(query, mCategoryInfo, page, delegate);
     }
 
     private class SuggestionsFilter extends Filter {

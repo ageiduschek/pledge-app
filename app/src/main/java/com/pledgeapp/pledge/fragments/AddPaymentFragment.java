@@ -45,6 +45,9 @@ public class AddPaymentFragment  extends Fragment {
 
     private PledgeModel mPledgeModel;
 
+    private PledgeModel.OnResultDelegate<List<PledgeCard>> mGetCardsDelegate;
+    private List<PledgeModel.OnResultDelegate> mDeleteCardDelegates = new ArrayList<>();
+
     public static AddPaymentFragment newInstance() {
         
         Bundle args = new Bundle();
@@ -66,7 +69,7 @@ public class AddPaymentFragment  extends Fragment {
     }
 
     private void fetchCreditCards(boolean forceFetchFromServer, boolean suppressSpinner) {
-        mPledgeModel.getCreditCards(forceFetchFromServer, new PledgeModel.OnResultDelegate<List<PledgeCard>>(getContext(), !suppressSpinner && getUserVisibleHint()) {
+        mGetCardsDelegate = new PledgeModel.OnResultDelegate<List<PledgeCard>>(getContext(), !suppressSpinner && getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<PledgeCard> result) {
                 super.onQueryComplete(result);
@@ -74,7 +77,9 @@ public class AddPaymentFragment  extends Fragment {
                 aCreditCards.clear();
                 aCreditCards.addAll(result);
             }
-        });
+        };
+
+        mPledgeModel.getCreditCards(forceFetchFromServer, mGetCardsDelegate);
     }
 
     @Nullable
@@ -104,13 +109,16 @@ public class AddPaymentFragment  extends Fragment {
                 builder.setPositiveButton("Delete card", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        mPledgeModel.deleteCreditCard(card, new PledgeModel.OnResultDelegate(getContext(), true) {
+                        PledgeModel.OnResultDelegate delegate = new PledgeModel.OnResultDelegate(getContext(), true) {
                             @Override
                             public void onQueryComplete(Object result) {
                                 super.onQueryComplete(result);
                                 aCreditCards.remove(card);
                             }
-                        });
+                        };
+
+                        mDeleteCardDelegates.add(delegate);
+                        mPledgeModel.deleteCreditCard(card, delegate);
                     }
                 });
                 AlertDialog alert = builder.create();
@@ -163,15 +171,15 @@ public class AddPaymentFragment  extends Fragment {
         mPledgeModel.addCreditCard(scanResult, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                // Force server fetch since we just added a new credit card
-                fetchCreditCards(true, true);
-                mListener.onPaymentSuccessfullyAdded();
+                if (mListener != null) {
+                    // Force server fetch since we just added a new credit card
+                    fetchCreditCards(true, true);
+                    mListener.onPaymentSuccessfullyAdded();
+                }
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
-            }
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {}
         });
     }
 
@@ -190,5 +198,15 @@ public class AddPaymentFragment  extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mGetCardsDelegate.cancel();
+        for (PledgeModel.OnResultDelegate delegate : mDeleteCardDelegates) {
+            delegate.cancel();
+        }
+        mDeleteCardDelegates.clear();
     }
 }

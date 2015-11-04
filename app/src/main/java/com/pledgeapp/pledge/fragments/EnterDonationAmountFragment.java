@@ -38,6 +38,58 @@ public class EnterDonationAmountFragment extends Fragment {
     private onDonationSuccessListener mListener;
 
     private EditText etDonationAmount;
+    private Button btnSubmitDonation;
+
+    private DonateResponseHandler mDonateResponseHandler = new DonateResponseHandler();
+
+    private class DonateResponseHandler extends JsonHttpResponseHandler {
+        private ProgressDialog pd;
+        private Double donationAmount;
+        private boolean mCancelled = false;
+
+        public void setLoading() {
+            btnSubmitDonation.setEnabled(false);
+            donationAmount = getDollarValue(etDonationAmount.getText().toString());
+            pd = new ProgressDialog(getContext());
+            pd.setMessage("Donating $" + String.format("%.2f", donationAmount) + "...");
+            pd.setTitle("Donation");
+            pd.setCancelable(false);
+            pd.show();
+        }
+
+        public Double getDonationAmount(){
+            return donationAmount;
+        }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            pd.dismiss();
+            if (!mCancelled) {
+                Toast.makeText(getContext(), "You donated $" + String.format("%.2f", donationAmount) + "!", Toast.LENGTH_SHORT).show();
+                mListener.onDonationSuccess();
+            }
+        }
+
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+            pd.dismiss();
+            if (!mCancelled) {
+                String errorStr;
+                if (errorResponse != null) {
+                    Log.d("NETWORK ERROR", errorResponse.toString());
+                    errorStr = "This nonprofit isn't processing donations";
+                } else {
+                    errorStr = "Network error";
+                }
+                Toast.makeText(getContext(), errorStr, Toast.LENGTH_SHORT).show();
+                btnSubmitDonation.setEnabled(true);
+            }
+        }
+
+        public void cancel(){
+            mCancelled = true;
+        }
+    }
 
     public interface onDonationSuccessListener {
         void onDonationSuccess();
@@ -70,41 +122,13 @@ public class EnterDonationAmountFragment extends Fragment {
         }
 
         etDonationAmount = (EditText) v.findViewById(R.id.etDonationAmount);
-        final Button btnSubmitDonation = (Button) v.findViewById(R.id.btnSubmitDonation);
+        btnSubmitDonation = (Button) v.findViewById(R.id.btnSubmitDonation);
         btnSubmitDonation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btnSubmitDonation.setEnabled(false);
-                final Double donationAmount = getDollarValue(etDonationAmount.getText().toString());
-
-                final ProgressDialog pd = new ProgressDialog(getContext());
-                pd.setMessage("Donating $" + String.format("%.2f", donationAmount) + "...");
-                pd.setTitle("Donation");
-                pd.setCancelable(false);
-                pd.show();
-
-                PledgeApplication.getPledgeModel().donate(donationAmount, nonProfit, new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        pd.dismiss();
-                        Toast.makeText(getContext(), "You donated $" + String.format("%.2f", donationAmount) + "!", Toast.LENGTH_SHORT).show();
-                        mListener.onDonationSuccess();
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        String errorStr;
-                        if (errorResponse != null) {
-                            Log.d("NETWORK ERROR", errorResponse.toString());
-                            errorStr = "This nonprofit isn't processing donations";
-                        } else {
-                            errorStr = "Network error";
-                        }
-                        Toast.makeText(getContext(), errorStr, Toast.LENGTH_SHORT).show();
-                        pd.dismiss();
-                        btnSubmitDonation.setEnabled(true);
-                    }
-                });
+                mDonateResponseHandler.setLoading();
+                PledgeApplication.getPledgeModel().donate(mDonateResponseHandler.getDonationAmount(),
+                                                          nonProfit, mDonateResponseHandler);
             }
         });
         btnSubmitDonation.setEnabled(true);
@@ -210,5 +234,11 @@ public class EnterDonationAmountFragment extends Fragment {
         InputMethodManager imm =
                 (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mDonateResponseHandler.cancel();
     }
 }
