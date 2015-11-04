@@ -62,11 +62,11 @@ public class AddPaymentFragment  extends Fragment {
 
         creditCards = new ArrayList<>();
         aCreditCards = new CreditCardAdapter(getContext(), creditCards);
-        fetchCreditCards(false);
+        fetchCreditCards(false, false);
     }
 
-    private void fetchCreditCards(boolean forceFetchFromServer) {
-        mPledgeModel.getCreditCards(forceFetchFromServer, new PledgeModel.OnResultDelegate<List<PledgeCard>>(getContext(), false) {
+    private void fetchCreditCards(boolean forceFetchFromServer, boolean suppressSpinner) {
+        mPledgeModel.getCreditCards(forceFetchFromServer, new PledgeModel.OnResultDelegate<List<PledgeCard>>(getContext(), !suppressSpinner && getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<PledgeCard> result) {
                 super.onQueryComplete(result);
@@ -164,7 +164,7 @@ public class AddPaymentFragment  extends Fragment {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 // Force server fetch since we just added a new credit card
-                fetchCreditCards(true);
+                fetchCreditCards(true, true);
                 mListener.onPaymentSuccessfullyAdded();
             }
 
