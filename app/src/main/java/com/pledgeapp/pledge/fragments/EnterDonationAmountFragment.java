@@ -59,7 +59,10 @@ public class EnterDonationAmountFragment extends Fragment {
         // TODO: Create view for this fragment!
         View v =  inflater.inflate(R.layout.fragment_enter_amount, container, false);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(R.string.enter_amount_plea);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            activity.getSupportActionBar().setTitle(R.string.enter_amount_plea);
+        }
 
         final NonProfit nonProfit = getArguments().getParcelable(KEY_NON_PROFIT);
         if (nonProfit == null) {

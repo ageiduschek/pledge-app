@@ -103,6 +103,10 @@ public class PledgeModel {
         PledgeClient.getInstance().createOrFindUser(email, firstName, lastName, handler);
     }
 
+    public User getUser() {
+        return mUser;
+    }
+
     public void addCreditCard(CreditCard creditCard, AsyncHttpResponseHandler handler) {
         PledgeClient.getInstance().addCreditCard(mUser.getEmail(), creditCard, handler);
     }
