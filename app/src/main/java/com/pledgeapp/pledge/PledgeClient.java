@@ -45,14 +45,10 @@ public class PledgeClient {
 		mClient.get(apiUrl, params, handler);
 	}
 
-	public void getLocal(AsyncHttpResponseHandler handler) {
+	public void getLocal(String state, AsyncHttpResponseHandler handler) {
 		// TODO(nikhilb): Update this endpoint when you actually build "/local"
 
-		String apiUrl = getApiUrl("/featured");
-
-		RequestParams params = new RequestParams();
-
-        mClient.get(apiUrl, params, handler);
+		search(null, null, state, 1, handler);
 	}
 
     public void getCreditCards(String userId, AsyncHttpResponseHandler handler) {
@@ -117,14 +113,19 @@ public class PledgeClient {
         mClient.get(apiUrl, params, handler);
     }
 
-	public void search(String query, NonProfit.CategoryInfo category, int page, AsyncHttpResponseHandler handler) {
+	public void search(String query, NonProfit.CategoryInfo category, String state, int page, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("/search");
 
         RequestParams params = new RequestParams();
-        params.put("q", query);
+        if (query != null && !query.equals("")) {
+            params.put("q", query);
+        }
 		if (category != null) {
 			params.put("category", category.searchIndex);
 		}
+        if (state != null && !state.equals("")) {
+            params.put("state", state);
+        }
         params.put("page", page);
 
         mClient.get(apiUrl, params, handler);
