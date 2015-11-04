@@ -1,49 +1,61 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/primary"
-    tools:context=".LoginActivity"
-    android:gravity="center_vertical|center_horizontal"
-    >
-
-
-    <!-- TODO: Make the logo a drawable? -->
-    <TextView
+    android:layout_height="match_parent">
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="@string/app_name"
-        android:layout_weight="50"
-        android:layout_gravity="center"
-        android:textSize="60sp"
-        android:gravity="center_horizontal|bottom"
-        android:typeface="serif"
-        android:textColor="@color/icons"
-        android:padding="5sp"
-        />
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:src="@drawable/login_background_2_cropped"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="30"
-        android:text="@string/pledge_tagline"
-        android:textColor="@color/icons"
-        android:textSize="20sp"/>
-
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="20"
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical"
+                  tools:context=".LoginActivity"
+                  android:background="@color/light_accent_transparent"
+                  android:gravity="center_vertical|center_horizontal"
         >
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
+
+
+        <!-- TODO: Make the logo a drawable? -->
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_height="0dp"
+            android:text="@string/app_name"
+            android:layout_weight="50"
+            android:layout_gravity="center"
+            android:textSize="60sp"
+            android:gravity="center_horizontal|bottom"
+            android:typeface="serif"
+            android:textColor="@color/icons"
+            android:padding="5sp"
             />
-    </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="30"
+            android:text="@string/pledge_tagline"
+            android:textColor="@color/icons"
+            android:textSize="20sp"/>
 
 
-</LinearLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20"
+            >
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/sign_in_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                />
+        </FrameLayout>
+
+
+    </LinearLayout>
+
+</FrameLayout>
