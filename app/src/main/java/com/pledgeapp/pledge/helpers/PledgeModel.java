@@ -2,9 +2,6 @@ package com.pledgeapp.pledge.helpers;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
@@ -23,7 +20,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +71,6 @@ public class PledgeModel {
 
     private User mUser;
     private List<PledgeCard> mCreditCards;
-    private Location mCurrentLocation;
 
     public PledgeModel(Context context) {
         mContext = context;
@@ -110,22 +105,6 @@ public class PledgeModel {
 
     public User getUser() {
         return mUser;
-    }
-
-    public String getState() {
-        Geocoder geocoder = new Geocoder(mContext);
-        try {
-            Address address = geocoder.getFromLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1).get(0);
-            return address.getAdminArea();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return "";
-    }
-
-    public void setCurrentLocation(Location currentLocation) {
-        mCurrentLocation = currentLocation;
     }
 
     public void addCreditCard(CreditCard creditCard, AsyncHttpResponseHandler handler) {
@@ -199,8 +178,8 @@ public class PledgeModel {
         postWhenBootstrapComplete(new GetFeaturedTask(delegate));
     }
 
-    public void getLocal(String state, PledgeModel.OnResultDelegate<List<NonProfit>> delegate) {
-        postWhenBootstrapComplete(new GetLocalTask(state, delegate));
+    public void getLocal(PledgeModel.OnResultDelegate<List<NonProfit>> delegate) {
+        postWhenBootstrapComplete(new GetLocalTask(delegate));
     }
 
     public void getCreditCards(boolean forceServerFetch, PledgeModel.OnResultDelegate<List<PledgeCard>> delegate) {
@@ -240,7 +219,7 @@ public class PledgeModel {
 
         @Override
         protected void fetchRemoteResult(JsonHttpResponseHandler httpResponseHandler) {
-            PledgeClient.getInstance().getFeatured(httpResponseHandler);
+            PledgeClient.getInstance().getLocal(httpResponseHandler);
         }
 
         @Override
@@ -255,11 +234,8 @@ public class PledgeModel {
     }
 
     private class GetLocalTask extends GetQueryTask<List<NonProfit>> {
-        private final String mState;
-
-        public GetLocalTask(String state, OnResultDelegate<List<NonProfit>> delegate) {
+        public GetLocalTask(OnResultDelegate<List<NonProfit>> delegate) {
             super(delegate);
-            mState = state;
         }
 
         @Override
@@ -274,7 +250,7 @@ public class PledgeModel {
 
         @Override
         protected void fetchRemoteResult(JsonHttpResponseHandler httpResponseHandler) {
-            PledgeClient.getInstance().getLocal(mState, httpResponseHandler);
+            PledgeClient.getInstance().getLocal(httpResponseHandler);
         }
 
         @Override
@@ -429,7 +405,7 @@ public class PledgeModel {
 
         @Override
         protected void fetchRemoteResult(JsonHttpResponseHandler httpResponseHandler) {
-            PledgeClient.getInstance().search(mQuery, mCategory, null, mPage, httpResponseHandler);
+            PledgeClient.getInstance().search(mQuery, mCategory, mPage, httpResponseHandler);
         }
 
         @Override

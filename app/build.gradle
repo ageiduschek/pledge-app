@@ -44,7 +44,6 @@ dependencies {
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
     compile 'com.google.android.gms:play-services-identity:8.1.0'
     compile 'com.google.android.gms:play-services-plus:8.1.0'
-    compile 'com.google.android.gms:play-services-location:8.1.0'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'io.card:android-sdk:5.1.1'
 }
