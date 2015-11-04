@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -159,7 +158,8 @@ public class EnterDonationAmountFragment extends Fragment {
 
         etDonationAmount.setText("$");
         if(etDonationAmount.requestFocus()) {
-            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(etDonationAmount, InputMethodManager.SHOW_IMPLICIT);
         }
 
         TextView tvNonProfitName = (TextView) v.findViewById(R.id.tvNonProfitName);
