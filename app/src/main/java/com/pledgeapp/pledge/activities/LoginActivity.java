@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -31,10 +32,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.pledgeapp.pledge.PledgeApplication;
@@ -49,7 +52,8 @@ public class LoginActivity extends AppCompatActivity implements
         ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener {
+        View.OnClickListener,
+        LocationListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
 
@@ -65,6 +69,10 @@ public class LoginActivity extends AppCompatActivity implements
 
     /* Client for accessing Google APIs */
     private GoogleApiClient mGoogleApiClient;
+
+    private LocationRequest mLocationRequest;
+    private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
+    private long FASTEST_INTERVAL = 2000; /* 2 sec */
 
     /* Is there a ConnectionResult resolution in progress? */
     private boolean mIsResolving = false;
@@ -91,6 +99,7 @@ public class LoginActivity extends AppCompatActivity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
+                .addApi(LocationServices.API)
                 .addScope(Plus.SCOPE_PLUS_LOGIN)
                 .addScope(Plus.SCOPE_PLUS_PROFILE)
                 .build();
@@ -106,6 +115,13 @@ public class LoginActivity extends AppCompatActivity implements
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        mGoogleApiClient.disconnect();
+        super.onStop();
     }
 
     @Override
@@ -153,8 +169,30 @@ public class LoginActivity extends AppCompatActivity implements
         Log.d(TAG, "onConnected:" + bundle);
         mShouldResolve = false;
 
+        Location mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        // Note that this can be NULL if last location isn't already known.
+        if (mCurrentLocation != null) {
+            // Print current location if not null
+            Log.d("DEBUG", "current location: " + mCurrentLocation.toString());
+            LatLng latLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            onLocationChanged(mCurrentLocation);
+        }
+        // Begin polling for new location updates.
+        startLocationUpdates();
+
         // Show the signed-in UI
         onAuthGranted();
+    }
+
+    protected void startLocationUpdates() {
+        // Create the location request
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(UPDATE_INTERVAL)
+                .setFastestInterval(FASTEST_INTERVAL);
+        // Request location updates
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+                mLocationRequest, this);
     }
 
     @Override
@@ -259,5 +297,10 @@ public class LoginActivity extends AppCompatActivity implements
         mShouldResolve = true;
         mGoogleApiClient.connect();
         // TODO: Show a message to the user that we are signing in.
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        PledgeApplication.getPledgeModel().setCurrentLocation(location);
     }
 }
