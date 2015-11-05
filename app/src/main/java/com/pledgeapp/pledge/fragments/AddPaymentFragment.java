@@ -114,6 +114,7 @@ public class AddPaymentFragment  extends Fragment {
                             public void onQueryComplete(Object result) {
                                 super.onQueryComplete(result);
                                 aCreditCards.remove(card);
+                                fetchCreditCards(true, true);
                             }
                         };
 
