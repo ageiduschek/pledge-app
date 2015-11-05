@@ -41,12 +41,16 @@ public class DonationHistoryFragment extends Fragment {
 
         donations = new ArrayList<>();
         aDonations = new DonationsAdapter(getActivity(), donations);
+    }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
         mDelegate = new PledgeModel.OnResultDelegate<List<Donation>>(getContext(), getUserVisibleHint()) {
             @Override
             public void onQueryComplete(List<Donation> result) {
                 super.onQueryComplete(result);
+                aDonations.clear();
                 aDonations.addAll(result);
                 updateDonationsTotalLabel();
             }
@@ -86,8 +90,8 @@ public class DonationHistoryFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onPause() {
+        super.onPause();
         mDelegate.cancel();
     }
 }

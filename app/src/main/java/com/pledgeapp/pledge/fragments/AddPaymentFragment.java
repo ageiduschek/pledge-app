@@ -65,6 +65,11 @@ public class AddPaymentFragment  extends Fragment {
 
         creditCards = new ArrayList<>();
         aCreditCards = new CreditCardAdapter(getContext(), creditCards);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         fetchCreditCards(false, false);
     }
 
@@ -180,7 +185,8 @@ public class AddPaymentFragment  extends Fragment {
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {}
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+            }
         });
     }
 
@@ -202,8 +208,8 @@ public class AddPaymentFragment  extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onPause() {
+        super.onPause();
         mGetCardsDelegate.cancel();
         for (PledgeModel.OnResultDelegate delegate : mDeleteCardDelegates) {
             delegate.cancel();
